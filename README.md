@@ -1,9 +1,9 @@
-# {PROJECT TOPIC} 
+# Library Management System 
 Internet Computing (CP476) - Group 2
 
 ## Topics (in discussion)
 - 8. Online Discussion Board / Forum
-- 15. Library Management System
+- 15. Library Management System (Majority Voted)
 
 ## Members
 - Max Schwarzenberg
