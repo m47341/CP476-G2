@@ -1,7 +1,14 @@
 # Roles
 
-## User Stories (3 people)
+## Proposal (2 people) - Due May 25, 2026
+**Requirements**:
 
+- Problem statement, motivation, target users
+- App concept and scope (what is in / out)
+- Features list (Must Have: Essential for product viability; Should Have: Very important, adds significant value, but product can launch without it; Could Have: Nice additions, low impact if omitted.)
+
+## User Stories and Wireframes (5 people) - Due May 29, 2026
+## User Stories
 **Requirements**:
 
 - Each story includes: role, goal, value and clear acceptance criteria
@@ -24,7 +31,7 @@
   - Acceptance Criteria (must be testable)
     - eg, if a librarian is on an `Add Book` page, then they fill out the fields (Title, Author, ISBN) and click `Submit`, then the book is saved and a success message appears, then can be searched in the system
 
-## Wireframe (4 people)
+## Wireframe
 
 **Requirements**:
 
@@ -55,7 +62,7 @@ _Wireframe sites (potentially)_:
 - Navigation: use arrows connecting screens to explicitly show what button leads to what page
   - eg, if clicking `Cancel` goes back to dashboard, draw an arrow showing that
 
-## Data planning (3 people)
+## Data planning (3 people) -  Due June 1, 2026
 
 **Requirements**:
 
