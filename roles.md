@@ -1,6 +1,11 @@
 # Roles
 
 ## Proposal (2 people) - Due May 25, 2026
+**Members**:
+
+- Max Schwarzenberg
+- Sarah Jackson
+
 **Requirements**:
 
 - Problem statement, motivation, target users
@@ -8,6 +13,14 @@
 - Features list (Must Have: Essential for product viability; Should Have: Very important, adds significant value, but product can launch without it; Could Have: Nice additions, low impact if omitted.)
 
 ## User Stories and Wireframes (5 people) - Due May 29, 2026
+**Members**:
+
+- Sienna Brar
+- Christian Simon
+- Melanie Tran
+- Carter Woods
+- Nicholas Perez
+
 ## User Stories
 **Requirements**:
 
@@ -63,6 +76,11 @@ _Wireframe sites (potentially)_:
   - eg, if clicking `Cancel` goes back to dashboard, draw an arrow showing that
 
 ## Data planning (3 people) -  Due June 1, 2026
+**Members**:
+
+- Max Schwarzenberg
+- Inam Ul Haque
+- Anubhav Pandey
 
 **Requirements**:
 
