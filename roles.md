@@ -99,4 +99,4 @@ _Wireframe sites (potentially)_:
 
 - High Level Relationships: dont need complex database schemas yet, but write out how they connect
   - eg, a student can have many Loans (one to many), a book can be tied to many loans over time (one to many), an author can be      tied to many books in the system (one to many)
-  - Librarians have permission to create, edit or delete records in the book and loans tables. While students have read only access to search for books and to view their loans.
+  - Librarians have permission to create, edit or delete records in the books and loans tables. While students have read only access to search for books and to view their loans.
