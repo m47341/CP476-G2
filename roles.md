@@ -75,12 +75,13 @@ _Wireframe sites (potentially)_:
 - Navigation: use arrows connecting screens to explicitly show what button leads to what page
   - eg, if clicking `Cancel` goes back to dashboard, draw an arrow showing that
 
-## Data planning (3 people) -  Due June 1, 2026
+## Data planning (4 people) -  Due June 1, 2026
 **Members**:
 
 - Max Schwarzenberg
 - Inam Ul Haque
 - Anubhav Pandey
+- Abdullahi Isa
 
 **Requirements**:
 
@@ -97,4 +98,5 @@ _Wireframe sites (potentially)_:
   - `Authors` (ID, Name (to keep data normalized))
 
 - High Level Relationships: dont need complex database schemas yet, but write out how they connect
-  - eg, a student can have many Loans (one to many), a book can be tied to many loans over time (one to many)
+  - eg, a student can have many Loans (one to many), a book can be tied to many loans over time (one to many), an author can be      tied to many books in the system (one to many)
+  - Librarians have permission to create, edit or delete records in the book and loans tables. While students have read only access to search for books and to view their loans.
