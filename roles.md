@@ -1,6 +1,7 @@
 # Roles
 
 ## Proposal (2 people) - Due May 25, 2026
+
 **Members**:
 
 - Max Schwarzenberg
@@ -13,6 +14,7 @@
 - Features list (Must Have: Essential for product viability; Should Have: Very important, adds significant value, but product can launch without it; Could Have: Nice additions, low impact if omitted.)
 
 ## User Stories and Wireframes (5 people) - Due May 29, 2026
+
 **Members**:
 
 - Sienna Brar
@@ -22,6 +24,7 @@
 - Nicholas Perez
 
 ## User Stories
+
 **Requirements**:
 
 - Each story includes: role, goal, value and clear acceptance criteria
@@ -75,7 +78,8 @@ _Wireframe sites (potentially)_:
 - Navigation: use arrows connecting screens to explicitly show what button leads to what page
   - eg, if clicking `Cancel` goes back to dashboard, draw an arrow showing that
 
-## Data planning (4 people) -  Due June 1, 2026
+## Data planning (4 people) - Due June 1, 2026
+
 **Members**:
 
 - Max Schwarzenberg
@@ -91,12 +95,50 @@ _Wireframe sites (potentially)_:
 
 **Rough Notes**:
 
-- Tables:
-  - `Users` (ID, Name, Email, Role [Librarian/Students])
-  - `Books` (ID, Title, Author, ISBN, Quantity/Status)
-  - `Loans` (ID, User_ID, Book_ID, Borrow_Date, Due_Date, Return_Date)
-  - `Authors` (ID, Name (to keep data normalized))
+### Tables:
 
-- High Level Relationships: dont need complex database schemas yet, but write out how they connect
-  - eg, a student can have many Loans (one to many), a book can be tied to many loans over time (one to many), an author can be      tied to many books in the system (one to many)
-  - Librarians have permission to create, edit or delete records in the books and loans tables. While students have read only access to search for books and to view their loans.
+USERS
+
+- ID (PK): Integer, Auto increment unique identifier.
+- Name: VARCHAR, Full name.
+- Email: VARCHAR, Email address (unique).
+- Role: VARCHAR/ENUM, Either Librarian or Students to enforce access control.
+
+BOOKS
+
+- ID (PK): Integer, Auto increment unique identifier.
+- Title: VARCHAR, Title of book.
+- Author_ID: Integer, FK > AUTHORS:ID.
+- ISBN: VARCHAR, International book number (unique).
+- Total_Quantity: Integer, Total copies owned.
+- Available_Quantity: Integer, Available copies. if 0, status is unavailable. Must be <=Total_Quantity.
+
+LOANS
+
+- ID (PK): Integer, Auto increment unique.
+- User_ID: Integer, FK > USERS:ID.
+- Book_ID: Integer, FK > BOOKS:ID.
+- Borrow_Date: DATE, When the book was initially borrowed.
+- Due_Date: DATE, Deadline for return, +14 days after Borrow_Date.
+- Returned_Date: DATE, default null. if current day > Due_Date, USERS get charged ~$0.50 per day.
+- Fine_amount: DECIMAL(5,2), Default $0.00, accumulated late fees.
+
+AUTHORS
+
+- ID (PK): Integer, Auto increment unique identifier.
+- Name: VARCHAR, Full author name (in separate table so 3NF).
+
+### High Level Relationships:
+
+- **USERS to LOANS (1:M)**: A single user (student) can check out multiple books at the same time, creating many loans. Each loan belongs to one user.
+- **BOOKS to LOANS (1:M)**: A book in the system can be checked out many times over time, creating many loans over time. Each loan references one book.
+- **AUTHORS to BOOKS (1:M)**: An author can have many books in the system. Each book has one primary author.
+
+### Data Flow:
+
+- Librarians have read/write permissions to create, edit or delete records in the book and loans tables.
+- Students have read access to search for books and to view their individual loans.
+
+### Fine Logic:
+
+If a book is unreturned (LOANS:Return_date is null) after its due date (LOANS:Due_date), fine (LOANS:Fine_amount) is increased by $0.50 every day its unreturned.
