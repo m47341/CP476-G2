@@ -1,0 +1,4 @@
+Blog: https://docs.google.com/spreadsheets/d/1hI2KMkwCc1HhGJo3xjoE9OrsWXvXq3ANb6ADEhFnVeE/edit?usp=sharing
+GitHub Repository: https://github.com/m47341/CP476-G2
+GitHub Project Board/Kanban: https://github.com/users/m47341/projects/1
+GitHub Wiki: https://github.com/m47341/CP476-G2/wiki
