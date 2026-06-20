@@ -2,6 +2,12 @@
 
 Internet Computing (CP476) - Group 2
 
+## Overview
+
+(improve later)
+
+A full stack library management system. For finding and getting books, handling data management, and more.
+
 ## Members
 
 - Max Schwarzenberg
@@ -14,7 +20,3 @@ Internet Computing (CP476) - Group 2
 - Melanie Tran
 - Carter Woods
 - Nicholas Perez
-
----
-
-check `roles.md` for more rough notes on role assignments
