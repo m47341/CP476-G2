@@ -5,8 +5,7 @@ const mysql = require("mysql2"); // https://www.npmjs.com/package/mysql2
 
 // creates shared pool of 10 reusable connections over a universal port
 const pool = mysql.createPool({
-  host: "localhost",
-  port: "3063", // maybe can change later
+  host: "127.0.0.1", // localhost
   user: "root",
   password: "pass123",
   database: "library_db",
