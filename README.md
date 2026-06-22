@@ -8,6 +8,13 @@ Internet Computing (CP476) - Group 2
 
 A full stack library management system. For finding and getting books, handling data management, and more.
 
+## Prerequisites
+
+```bash
+npm init -y
+npm install express cors body-parser mysql2
+```
+
 ## Members
 
 - Max Schwarzenberg

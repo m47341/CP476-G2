@@ -1,0 +1,29 @@
+{
+  "name": "cp476-g2",
+  "version": "1.0.0",
+  "description": "Internet Computing (CP476) - Group 2",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m47341/CP476-G2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/m47341/CP476-G2/issues"
+  },
+  "homepage": "https://github.com/m47341/CP476-G2#readme",
+  "dependencies": {
+    "body-parser": "^2.3.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mysql2": "^3.22.5"
+  }
+}
