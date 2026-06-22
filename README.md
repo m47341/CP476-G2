@@ -20,6 +20,29 @@ npm install express cors body-parser mysql2
 - `body-parser`: Piece of middleware that extracts data out of HTTP request bodies and translates it into JSON objects.
 - `mysql2`: Database driver that allows js code to execute SQL queries directly against MySQL server.
 
+## Running
+
+this is more just personal notes for me, ignore for now
+on another note, will need to test in other enviornments to see if my results are reproducible, but thats a later problem
+
+### start and verify the db daemon
+
+```bash
+sudo systemctl start mysql && sudo systemctl status mysql
+```
+
+### seed db schema and mock data
+
+```bash
+mysql -u root -p < database/init.sql
+```
+
+### boot backend server
+
+```bash
+node backend/server.js
+```
+
 ## Members
 
 - Max Schwarzenberg
