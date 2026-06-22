@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parton Login</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page">
+    <div class="screen">
+      <section id="loginView" class="login-view">
+        <h1 class="title">Parton Login</h1>
+
+        <div class="login-box">
+          <div class="field">
+            <span>Username:</span>
+            <input id="username" type="text" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <span>Password:</span>
+            <input id="password" type="password" autocomplete="off" />
+          </div>
+        </div>
+      </section>
+
+      <section id="menuView" class="menu-view hidden">
+        <aside class="sidebar">
+          <div class="sidebar-top">
+            <div class="menu-title">Menu</div>
+            <div class="menu-item link-item" id="catalogLink">Catalog</div>
+            <div class="menu-item link-item" id="loansLink">Current Loans</div>
+          </div>
+
+          <div class="sidebar-bottom">
+            <div class="radio"></div>
+            <div id="patronLabel">Patron_xxxxxxxx</div>
+          </div>
+        </aside>
+
+        <main class="content">
+          <div class="blank-image"></div>
+        </main>
+
+        <div class="bottom-center-btn"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const loginView = document.getElementById('loginView');
+    const menuView = document.getElementById('menuView');
+    const username = document.getElementById('username');
+    const password = document.getElementById('password');
+    const patronLabel = document.getElementById('patronLabel');
+    const catalogLink = document.getElementById('catalogLink');
+    const loansLink = document.getElementById('loansLink');
+
+    function goToMenu() {
+      const entered = username.value.trim();
+      patronLabel.textContent = entered ? `Patron_${entered}` : 'Patron_xxxxxxxx';
+      loginView.classList.add('hidden');
+      menuView.classList.remove('hidden');
+      document.body.classList.add('menu-open');
+    }
+
+    function submitIfAnyEntry() {
+      if (username.value.trim() || password.value.trim()) goToMenu();
+    }
+
+    username.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submitIfAnyEntry();
+    });
+
+    password.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submitIfAnyEntry();
+    });
+
+    catalogLink.addEventListener('click', () => {
+      window.location.href = 'catalog.html';
+    });
+
+    loansLink.addEventListener('click', () => {
+      window.location.href = 'current-loans.html';
+    });
+  </script>
+</body>
+</html>
