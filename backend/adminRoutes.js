@@ -4,7 +4,7 @@ const db = require("./database");
 const router = express.Router();
 
 router.get("/main-page", getAdminMainPage);
-router.get("/creat-new-patron", createNewPatron);
+router.get("/create-new-patron", createNewPatron);
 router.get("/update-patron", updatePatronInfo);
 router.get("/add-new-book", addNewBook);
 router.get("/search", searchBooksAdmin);
