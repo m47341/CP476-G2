@@ -15,6 +15,11 @@ npm init -y
 npm install express cors body-parser mysql2
 ```
 
+- `express`: Core framework that handles network routing, allowing server to accept API requests (eg, fetching books or logging in) and send back responses.
+- `cors`: Security tool that lets frontend talk to backend (even if running on different local ports).
+- `body-parser`: Piece of middleware that extracts data out of HTTP request bodies and translates it into JSON objects.
+- `mysql2`: Database driver that allows js code to execute SQL queries directly against MySQL server.
+
 ## Members
 
 - Max Schwarzenberg
