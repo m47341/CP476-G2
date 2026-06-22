@@ -1,0 +1,11 @@
+# package download folder
+node_modules/
+
+# local environments
+.env
+config.json
+
+# etc
+.DS_Store
+.vscode/
+.cache/
