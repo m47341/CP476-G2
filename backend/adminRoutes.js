@@ -1,8 +1,29 @@
 // everything librarians/admins can see/do
+const express = require("express");
+const db = require("./database");
+const router = express.Router();
 
-function getAdminMainPage() {
+router.get("/main-page", getAdminMainPage);
+router.get("/creat-new-patron", createNewPatron);
+router.get("/update-patron", updatePatronInfo);
+router.get("/add-new-book", addNewBook);
+router.get("/search", searchBooksAdmin);
+router.get("/check-out", checkOutBook);
+router.get("/check-in", checkInBook);
+router.get("/overdue-book-list", getOverdueBooksList);
+
+async function getAdminMainPage(req, res) {
   // goal: master screen for librarians
   // pulls up main control panel screen showing all available admin actions
+  try { 
+    // not sure what to include here
+    // It seems like the Admin mainpage is only buttons that lead to the other pages which is frontend foccused
+    // Do we want metrics here?
+    res.json({ success: true, message: "Admin dashboard loaded."});
+  } catch (error) {
+    console.error("Dashboard loading error: ", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
 }
 
 function createNewPatron() {
@@ -23,22 +44,128 @@ function addNewBook() {
   // inserts brand new row into catalog table with book details and stock count
 }
 
-function searchBooksAdmin() {
+async function searchBooksAdmin(req, res) {
   // goal: lets admin search through entire library collection
   // table: BOOKS (ID, Title, Author_ID, ISBN, Total_Quantity, Available_Quantity)
   // runs catalog search but displays internal data (eg, total stock vs available stock for inventory tracking)
+
+  // Extract string
+  const title = req.query.Title;
+  const isbn = req.query.ISBN;
+  const authorId = req.query.Author_Id;
+
+  // run database check
+  let rows = [];
+
+  try {
+    if (title) {
+      [rows] = await db.dbPromise.query(
+        "SELECT * FROM BOOKS WHERE Title LIKE ?",
+        ['%${title}%']
+      );
+    } else if (isbn) {
+      [rows] = await db.dbPromise.query(
+        "SELECT * FROM BOOKS WHERE ISBN = ?",
+        [isbn]
+      );
+    } else if (authorId) {
+      [rows] = await db.dbPromise.query(
+        "SELECT * FROM BOOKS WHERE Author_ID = ?",
+        [authorId]
+      );
+    }
+
+    // Send response
+    res.json({ success: true, books: rows });
+  } catch (error) {
+    console.error("Search error: ", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
 }
 
-function checkOutBook() {
+async function checkOutBook(req, res) {
   // goal: lets an admin lend a book to a student standing at the desk
   // table: LOANS (ID, User_ID, Book_ID, Borrow_Date, Due_Date, Returned_Date, Fine_amount)
   // creates brand new loan entry linking student ID and book ID, setting a 14 day deadline
+  
+  // Extract string
+  const patronName = req.body.Patron_Name;
+  const bookId = req.body.Book_ID;
+
+
+  // Translate Patron name into ID
+  try {
+    const [userRows] = await db.dbPromise.query(
+      "SELECT * FROM USERS WHERE name = ?",
+      [patronName]
+    );
+
+    if (userRows.length == 0) {
+      return res.status(404).json({ success: false, error: "Patron not found"});
+    }
+
+    const extractedUserId = userRows[0].ID;
+    // Create Loan
+    await db.dbPromise.query(
+      "INSERT INTO LOANS (User_ID, Book_ID, Borrow_Date, Due_Date) VALUES (?, ?, CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 14 DAY))",
+      [extractedUserId, bookId]
+    );    
+
+    // Update inventory
+    await db.dbPromise.query(
+      "UPDATE BOOKS SET Available_Quantity = Available_Quantity - 1 WHERE ID = ?",
+      [bookId]
+    );
+
+    res.json({ success: true, message: "Book checked out successfully."});
+
+  } catch (error) {
+    console.error("Check Out error: ", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
 }
 
-function checkInBook() {
+async function checkInBook(req, res) {
   // goal: processes a book that a student brings back to the front desk
   // table: LOANS (ID, User_ID, Book_ID, Borrow_Date, Due_Date, Returned_Date, Fine_amount)
   // updates books open loan row with current date for return and calculates fines if late
+  
+  // Extract string
+  const patronName = req.body.Patron_Name;
+  const bookId = req.body.Book_ID;
+
+
+  // Translate Patron name into ID
+  try {
+    const [userRows] = await db.dbPromise.query(
+      "SELECT * FROM USERS WHERE Name = ?",
+      [patronName]
+    );
+
+    if (userRows.length == 0) {
+      return res.status(404).json({ success: false, error: "Patron not found"});
+    }
+
+    const extractedUserId = userRows[0].ID;
+
+    // Close Loan
+    await db.dbPromise.query(
+      "UPDATE LOANS SET Returned_Date = CURRENT_DATE WHERE Book_ID = ? AND User_ID = ? AND Returned_Date IS NULL",
+      [bookId, extractedUserId]
+    );   
+
+    // Update inventory
+    await db.dbPromise.query(
+      "UPDATE BOOKS SET Available_Quantity = Available_Quantity + 1 WHERE ID = ?",
+      [bookId]
+    );
+
+    res.json({ success: true, message: "Book checked in successfully."});
+
+  } catch (error) {
+    console.error("Check In error: ", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
 }
 
 function getOverdueBooksList() {
