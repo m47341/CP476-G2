@@ -12,6 +12,7 @@ router.get("/check-out", checkOutBook);
 router.get("/check-in", checkInBook);
 router.get("/overdue-book-list", getOverdueBooksList);
 
+
 async function getAdminMainPage(req, res) {
   // goal: master screen for librarians
   // pulls up main control panel screen showing all available admin actions
@@ -51,29 +52,26 @@ async function searchBooksAdmin(req, res) {
 
   // Extract string
   const title = req.query.Title;
-  const isbn = req.query.ISBN;
-  const authorId = req.query.Author_Id;
-
-  // run database check
-  let rows = [];
-
+  const authorName = req.query.Author_Name;
+  
   try {
-    if (title) {
-      [rows] = await db.dbPromise.query(
-        "SELECT * FROM BOOKS WHERE Title LIKE ?",
-        ['%${title}%']
-      );
-    } else if (isbn) {
-      [rows] = await db.dbPromise.query(
-        "SELECT * FROM BOOKS WHERE ISBN = ?",
-        [isbn]
-      );
-    } else if (authorId) {
-      [rows] = await db.dbPromise.query(
-        "SELECT * FROM BOOKS WHERE Author_ID = ?",
-        [authorId]
-      );
+    // Translate Author into ID
+    const [authorRows] = await db.dbPromise.query(
+      "SELECT * FROM AUTHORS WHERE Name = ?",
+      [authorName]
+    );
+
+    if (authorRows.length == 0) {
+      return res.status(404).json({ success: false, error: "Author not found."});
     }
+
+    const extractedAuthorID = authorRows[0].ID;
+
+    // Search Database
+    const [rows] = await db.dbPromise.query(
+      "SELECT * FROM BOOKS WHERE Title = ? AND Author_ID = ?",
+      [title, extractedAuthorID]
+    );
 
     // Send response
     res.json({ success: true, books: rows });
@@ -93,8 +91,8 @@ async function checkOutBook(req, res) {
   const bookId = req.body.Book_ID;
 
 
-  // Translate Patron name into ID
   try {
+    // Translate Patron name into ID
     const [userRows] = await db.dbPromise.query(
       "SELECT * FROM USERS WHERE name = ?",
       [patronName]
