@@ -1,7 +1,3 @@
-const express = require("express");
-const db = require("./database");
-const router = express.Router();
-
 // everything regular students/patrons can see and do
 const express = require("express");
 const db = require("./database");
@@ -11,11 +7,6 @@ router.post("/landing-page", getLandingPage);
 router.post("/patron-main-page", getPatronMainPage);
 router.post("/patron-book-search", searchBooksPatron);
 router.post("/put-book-on-hold", putBookOnHold);
-
-router.post("/landing-page", getLandingPage);
-router.post("/main-page", getPatronMainPage);
-router.post("/search", searchBooksPatron);
-router.post("/book-hold", putBookOnHold);
 
 function getLandingPage(req, res) {
   // goal: main welcome screen anyone sees before logging in
@@ -45,8 +36,8 @@ async function searchBooksPatron(req, res) {
   // goal: lets regular students search library catalog
   // takes search keywords from patron search bar and runs query to find matching titles
   // Extract string
-  const title = req.query.Title;
-  const authorName = req.query.Author_Name;
+  const title = req.body.Title;
+  const authorName = req.body.Author_Name;
     
   try {
     // Translate Author into ID
