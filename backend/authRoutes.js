@@ -35,14 +35,14 @@ async function adminSignIn(req, res) {
     const user = userRows[0];
 
     if (user.Role !== 'Admin') {
-      return req.status(403).json({ success: false, error: "Unauthorized access"});
+      return res.status(403).json({ success: false, error: "Unauthorized access"});
     }
 
     if (user.Password !== adminPassword) {
-      return req.status(401).json({ success: false, error: "Invalid email or password."});
+      return res.status(401).json({ success: false, error: "Invalid email or password."});
     }
       // Unlock dashboard
-      res.json({ success: true, message: 'Welcome ${user.Name}'})
+      res.json({ success: true, message: `Welcome ${user.Name}`})
       
   } catch (error) {
     console.error("Admin Sign In error: ", error);
