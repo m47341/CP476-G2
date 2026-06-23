@@ -7,9 +7,9 @@ router.get("/main-page", getAdminMainPage);
 router.get("/create-new-patron", createNewPatron);
 router.get("/update-patron", updatePatronInfo);
 router.get("/add-new-book", addNewBook);
-router.get("/search", searchBooksAdmin);
-router.get("/check-out", checkOutBook);
-router.get("/check-in", checkInBook);
+router.post("/search", searchBooksAdmin);
+router.post("/check-out", checkOutBook);
+router.post("/check-in", checkInBook);
 router.get("/overdue-book-list", getOverdueBooksList);
 
 
@@ -51,14 +51,15 @@ async function searchBooksAdmin(req, res) {
   // runs catalog search but displays internal data (eg, total stock vs available stock for inventory tracking)
 
   // Extract string
-  const title = req.query.Title;
-  const authorName = req.query.Author_Name;
+  const title = req.body.Title;
+  const authorName = req.body.Author_Name;
+
   
   try {
     // Translate Author into ID
     const [authorRows] = await db.dbPromise.query(
-      "SELECT * FROM AUTHORS WHERE Name = ?",
-      [authorName]
+      "SELECT * FROM AUTHORS WHERE Name LIKE ?",
+      [`%${authorName}%`]
     );
 
     if (authorRows.length == 0) {
@@ -69,8 +70,8 @@ async function searchBooksAdmin(req, res) {
 
     // Search Database
     const [rows] = await db.dbPromise.query(
-      "SELECT * FROM BOOKS WHERE Title = ? AND Author_ID = ?",
-      [title, extractedAuthorID]
+      "SELECT * FROM BOOKS WHERE Title LIKE ? AND Author_ID = ?",
+      [`%${title}%`, extractedAuthorID]
     );
 
     // Send response
@@ -166,8 +167,51 @@ async function checkInBook(req, res) {
   }
 }
 
-function getOverdueBooksList() {
+async function getOverdueBooksList(req, res) {
   // goal: shows list of all books that are past due date and havent been returned yet
   // table: LOANS, USERS, BOOKS
   // filters database for loans where return date is blank and due date is older than current day
+  try {
+    // find overdue books
+    const [overdueRows] = await db.dbPromise.query(
+      "SELECT USERS.Name, BOOKS.Title, LOANS.Due_Date, LOANS.ID AS Loan_ID FROM LOANS INNER JOIN USERS ON LOANS.User_ID = USERS.ID INNER JOIN BOOKS ON LOANS.Book_ID = BOOKS.ID WHERE Returned_Date IS NULL AND Due_Date < CURRENT_DATE"
+    );
+
+    // if no overdue books
+    if (overdueRows.length == 0) {
+      return res.json({ success: true, message: "No overdue books." })
+    }
+
+    // if there are overdue books
+    const DAILY_LATE_FEE = 0.50; // I don't know what price we actually want to do
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    for (const row of overdueRows) {
+      const dueDate = new Date(row.Due_Date);
+
+      dueDate.setHours(0,0,0,0);
+
+      const timeDifference = today - dueDate;
+
+      const daysOverdue = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+      let fineAmount = 0;
+      if (daysOverdue > 0) {
+        fineAmount = daysOverdue * DAILY_LATE_FEE
+      }
+
+      row.daysOverdue = daysOverdue;
+      row.calculatedFine = fineAmount;
+      await db.dbPromise.query(
+        "UPDATE LOANS SET Fine_amount = ? WHERE ID = ?",
+        [fineAmount, row.Loan_ID]
+      );
+    };
+
+    res.json({ success: true, overdueRows: overdueRows })
+  } catch (error) {
+    console.error("Overdue Books List: ", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
 }
