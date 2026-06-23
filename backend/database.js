@@ -11,7 +11,7 @@ const pool = mysql.createPool({
   database: "library_db",
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0,
+  queueLimit: 0
 });
 
 // enables async/await support so js can wait for db data
@@ -32,5 +32,5 @@ function connectToDatabase() {
 // exports so server.js can pull
 module.exports = {
   connectToDatabase,
-  dbPromise,
+  dbPromise
 };

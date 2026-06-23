@@ -171,3 +171,5 @@ function getOverdueBooksList() {
   // table: LOANS, USERS, BOOKS
   // filters database for loans where return date is blank and due date is older than current day
 }
+
+module.exports = router;
