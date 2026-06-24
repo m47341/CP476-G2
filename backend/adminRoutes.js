@@ -26,7 +26,7 @@ async function getAdminMainPage(req, res) {
   }
 }
 
-function createNewPatron(req, res) {
+async function createNewPatron(req, res) {
   // goal: lets an admin register a brand new student into the system
   // table: USERS (ID, Name, Email, Password, Role)
   // takes new registration details from admin form and inserts them into database
@@ -35,18 +35,107 @@ function createNewPatron(req, res) {
   const patronName = req.body.Patron_Name;
   const patronEmail = req.body.Patron_Email;
   const patronPassword = req.body.Patron_Password;
+
+  try {
+    // Create new patron and insert it into USERS
+    await db.dbPromise.query(
+      "INSERT INTO USERS (Name, Email, Password, Role) VALUES (?, ?, ?, 'Patron')",
+      [patronName, patronEmail, patronPassword],
+    );
+    res.json({ success: true, message: "Patron created successfully." });
+  } catch (error) {
+    console.error("Patron creation error: ", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+  
 }
 
-function updatePatronInfo(req, res) {
+async function updatePatronInfo(req, res) {
   // goal: change an existing library members details
   // table: USERS (ID, Name, Email, Password, Role)
   // finds a user by their ID and overwrites fields (eg, email or name typos) with updated text
+
+  // Extract string
+  const patronName = req.body.Patron_Name;
+
+  const newPatronName = req.body.New_Patron_Name;
+  const newPatronEmail = req.body.New_Patron_Email;
+  const newPatronPassword = req.body.New_Patron_Password;
+
+  try {
+    // Translate Patron name into ID
+    const [userRows] = await db.dbPromise.query(
+      "SELECT * FROM USERS WHERE name = ?",
+      [patronName],
+    );
+
+    // Check if user exits
+    if (userRows.length == 0) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Patron not found" });
+    }
+
+    const extractedUserId = userRows[0].ID;
+
+    // Update patron
+    await db.dbPromise.query(
+      "UPDATE USERS SET Name = ?, Email = ?, Password = ? WHERE ID = ?",
+      [newPatronName, newPatronEmail, newPatronPassword, extractedUserId],
+    );
+
+    res.json({ success: true, message: "Patron updated successfully." });
+  } catch (error) {
+    console.error("Patron update error: ", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+
 }
 
-function addNewBook(req, res) {
+async function addNewBook(req, res) {
   // goal: lets admin add new book to lib inventory
   // table: BOOKS (ID, Title, Author_ID, ISBN, Total_Quantity, Available_Quantity)
   // inserts brand new row into catalog table with book details and stock count
+
+  //Extract string
+  const bookTitle = req.body.Book_Title;
+  const authorName = req.body.Author_Name;
+  const isbn = req.body.ISBN;
+  const totalQuantity = req.body.Total_Quantity;
+  const availableQuantity = req.body.Avaliable_Quantity;
+
+  try {
+    // Translate Author into ID
+    const [authorRows] = await db.dbPromise.query(
+      "SELECT * FROM AUTHORS WHERE Name = ?",
+      [authorName],
+    );
+
+    // If author does not exist, add it to database
+    if (authorRows.length == 0) {
+      await db.dbPromise.query(
+        "INSERT INTO AUTHORS (Name) VALUES (?)",
+        [authorName],
+      );
+      const [authorRows] = await db.dbPromise.query(
+        "SELECT * FROM AUTHORS WHERE Name = ?",
+        [authorName],
+      );
+    } 
+
+    const extractedAuthorID = authorRows[0].ID;
+
+    // Add new book
+    await db.dbPromise.query(
+      "INSERT INTO BOOKS (Title, Author_ID, ISBN, Total_Quantity, Available_Quantity) VALUES (?, ?, ?, ?, ?)",
+      [bookTitle, extractedAuthorID, isbn, totalQuantity, availableQuantity],
+    )
+
+    res.json({ success: true, message: "Book added successfully." });
+  } catch (error) {
+    console.error("Book creation error: ", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
 }
 
 async function searchBooksAdmin(req, res) {
