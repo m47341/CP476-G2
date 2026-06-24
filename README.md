@@ -37,10 +37,55 @@ sudo systemctl start mysql && sudo systemctl status mysql
 mysql -u root -p < database/init.sql
 ```
 
+Password: `pass123`
+
 ### boot backend server
 
 ```bash
 node backend/server.js
+```
+
+## Testing
+
+### Backend
+
+(make sure backend is running after `node backend/server.js`)
+
+#### Authentication Route Verification (`authRoutes.js`)
+
+```bash
+curl -X POST http://localhost:3060/auth/patron-sign-in -H "Content-Type: application/json" -d '{"patron_email": "jeb@email.com", "patron_password": "pass123"}' # pass
+curl -X POST http://localhost:3060/auth/admin-sign-in -H "Content-Type: application/json" -d '{"admin_email": "john@mail.com", "admin_password": "admin123"}' # pass
+curl -X POST http://localhost:3060/auth/admin-sign-in -H "Content-Type: application/json" -d '{"admin_email": "john@mail.com", "admin_password": "pass123"}' # fail, wrong password
+```
+
+#### Patron Feature Verification (`patronRoutes.js`)
+
+```bash
+curl -X POST http://localhost:3060/patron/landing-page
+curl -X POST http://localhost:3060/patron/patron-main-page
+curl -X POST http://localhost:3060/patron/patron-book-search -H "Content-Type: application/json" -d '{"Title": "1984", "Author_Name": "George Orwell"}' # pass, shows 1984
+curl -X POST http://localhost:3060/patron/put-book-on-hold -H "Content-Type: application/json" -d '{"User_ID": 2, "Book_ID": 1}' # pass
+curl -X POST http://localhost:3060/patron/patron-book-search -H "Content-Type: application/json" -d '{"Title": "1985", "Author_Name": "George Orwell"}' # fail, should show nothing
+
+```
+
+#### Admin Inventory Management Verification (`adminRoutes.js`)
+
+```bash
+curl http://localhost:3060/admin/main-page
+
+curl http://localhost:3060/admin/create-new-patron
+curl http://localhost:3060/admin/update-patron
+curl http://localhost:3060/admin/add-new-book
+
+curl -X POST http://localhost:3060/admin/search -H "Content-Type: application/json" -d '{"Title": "Frankenstein", "Author_Name": "Mary Shelley"}'
+
+curl -X POST http://localhost:3060/admin/check-out -H "Content-Type: application/json" -d '{"Patron_Name": "Jebediah Smith", "Book_ID": 1}'
+
+curl -X POST http://localhost:3060/admin/check-in -H "Content-Type: application/json" -d '{"Patron_Name": "Jebediah Smith", "Book_ID": 1}'
+
+curl http://localhost:3060/admin/overdue-book-list
 ```
 
 ## Members

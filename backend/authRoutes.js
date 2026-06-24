@@ -14,33 +14,38 @@ async function patronSignIn(req, res) {
   // Extract email and password
   const patronEmail = req.body.patron_email;
   const patronPassword = req.body.patron_password;
-  
+
   try {
     // Database Verification
     const [userRows] = await db.dbPromise.query(
       "SELECT * FROM USERS WHERE Email = ?",
-      [patronEmail]
+      [patronEmail],
     );
-    
+
     if (userRows.length == 0) {
-      return res.status(401).json({success: false, error: "Invalid email or password."});
+      return res
+        .status(401)
+        .json({ success: false, error: "Invalid email or password." });
     }
 
     const user = userRows[0];
 
-    if (user.Role !== 'Patron') {
-      return req.status(403).json({ success: false, error: "Unauthorized access"});
+    if (user.Role !== "Patron") {
+      return res
+        .status(403)
+        .json({ success: false, error: "Unauthorized access" });
     }
 
     if (user.Password !== patronPassword) {
-      return req.status(401).json({ success: false, error: "Invalid email or password."});
+      return res
+        .status(401)
+        .json({ success: false, error: "Invalid email or password." });
     }
-      // Unlock dashboard
-      res.json({ success: true, message: 'Welcome ${user.Name}'})
-      
+    // Unlock dashboard
+    res.json({ success: true, message: `Welcome ${user.Name}` });
   } catch (error) {
     console.error("Patron Sign In error: ", error);
-    res.status(500).json({ success: false, error: "Internal server error."});
+    res.status(500).json({ success: false, error: "Internal server error." });
   }
 }
 
@@ -52,33 +57,38 @@ async function adminSignIn(req, res) {
   // Extract email and password
   const adminEmail = req.body.admin_email;
   const adminPassword = req.body.admin_password;
-  
+
   try {
     // Database Verification
     const [userRows] = await db.dbPromise.query(
       "SELECT * FROM USERS WHERE Email = ?",
-      [adminEmail]
+      [adminEmail],
     );
-    
+
     if (userRows.length == 0) {
-      return res.status(401).json({success: false, error: "Invalid email or password."});
+      return res
+        .status(401)
+        .json({ success: false, error: "Invalid email or password." });
     }
 
     const user = userRows[0];
 
-    if (user.Role !== 'Admin') {
-      return res.status(403).json({ success: false, error: "Unauthorized access"});
+    if (user.Role !== "Admin") {
+      return res
+        .status(403)
+        .json({ success: false, error: "Unauthorized access" });
     }
 
     if (user.Password !== adminPassword) {
-      return res.status(401).json({ success: false, error: "Invalid email or password."});
+      return res
+        .status(401)
+        .json({ success: false, error: "Invalid email or password." });
     }
-      // Unlock dashboard
-      res.json({ success: true, message: `Welcome ${user.Name}`})
-      
+    // Unlock dashboard
+    res.json({ success: true, message: `Welcome ${user.Name}` });
   } catch (error) {
     console.error("Admin Sign In error: ", error);
-    res.status(500).json({ success: false, error: "Internal server error."});
+    res.status(500).json({ success: false, error: "Internal server error." });
   }
 }
 

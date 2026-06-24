@@ -11,21 +11,20 @@ router.post("/put-book-on-hold", putBookOnHold);
 function getLandingPage(req, res) {
   // goal: main welcome screen anyone sees before logging in
   // sends back main splash screen view where user picks admin or patron login
-  try { 
-    res.json({ success: true, message: "Landing page loaded."});
+  try {
+    res.json({ success: true, message: "Landing page loaded." });
   } catch (error) {
     console.error("Page loading error: ", error);
     res.status(500).json({ success: false, error: "Internal server error" });
   }
 }
 
-
 function getPatronMainPage(req, res) {
   // goal: the screen a patron sees right after logging in
   // table: USERS, LOANS
   // looks up logged in students ID to find active loans and any late fees owed
-  try { 
-    res.json({ success: true, message: "Patron dashboard loaded."});
+  try {
+    res.json({ success: true, message: "Patron dashboard loaded." });
   } catch (error) {
     console.error("Dashboard loading error: ", error);
     res.status(500).json({ success: false, error: "Internal server error" });
@@ -38,26 +37,28 @@ async function searchBooksPatron(req, res) {
   // Extract string
   const title = req.body.Title;
   const authorName = req.body.Author_Name;
-    
+
   try {
     // Translate Author into ID
     const [authorRows] = await db.dbPromise.query(
       "SELECT * FROM AUTHORS WHERE Name = ?",
-      [authorName]
+      [authorName],
     );
-  
+
     if (authorRows.length == 0) {
-      return res.status(404).json({ success: false, error: "Author not found."});
+      return res
+        .status(404)
+        .json({ success: false, error: "Author not found." });
     }
-  
+
     const extractedAuthorID = authorRows[0].ID;
-  
+
     // Search Database
     const [rows] = await db.dbPromise.query(
       "SELECT * FROM BOOKS WHERE Title = ? AND Author_ID = ?",
-      [title, extractedAuthorID]
+      [title, extractedAuthorID],
     );
-  
+
     // Send response
     res.json({ success: true, books: rows });
   } catch (error) {
@@ -79,18 +80,21 @@ async function putBookOnHold(req, res) {
     // query for hold table
     const [holdRows] = await db.dbPromise.query(
       "INSERT INTO HOLDS (User_ID, Book_ID, Date_Start) VALUES (?, ?, NOW())",
-      [userId, bookId]
+      [userId, bookId],
     );
 
     // Response
     const [bookRows] = await db.dbPromise.query(
       "SELECT * FROM BOOKS WHERE ID = ?",
-      [bookId]
+      [bookId],
     );
 
     const extractedBookTitle = bookRows[0].Title;
 
-    res.json({ success: true, message: `Successfully put ${extractedBookTitle} on hold.`});
+    res.json({
+      success: true,
+      message: `Successfully put ${extractedBookTitle} on hold.`,
+    });
   } catch (error) {
     console.error("Hold error: ", error);
     res.status(500).json({ success: false, error: "Internal server error" });
