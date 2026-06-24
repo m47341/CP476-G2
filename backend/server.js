@@ -13,7 +13,7 @@ const adminRoutes = require("./adminRoutes");
 
 // setup
 const app = express();
-const PORT = 3060;
+const PORT = 3061;
 
 // middleware, for cross origin requests and to parse json data
 app.use(cors());

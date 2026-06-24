@@ -27,19 +27,24 @@ async function getAdminMainPage(req, res) {
   }
 }
 
-function createNewPatron() {
+function createNewPatron(req, res) {
   // goal: lets an admin register a brand new student into the system
   // table: USERS (ID, Name, Email, Password, Role)
   // takes new registration details from admin form and inserts them into database
+
+  // Extract string
+  const patronName = req.body.Patron_Name;
+  const patronEmail = req.body.Patron_Email;
+  const patronPassword = req.body.Patron_Password;
 }
 
-function updatePatronInfo() {
+function updatePatronInfo(req, res) {
   // goal: change an existing library members details
   // table: USERS (ID, Name, Email, Password, Role)
   // finds a user by their ID and overwrites fields (eg, email or name typos) with updated text
 }
 
-function addNewBook() {
+function addNewBook(req, res) {
   // goal: lets admin add new book to lib inventory
   // table: BOOKS (ID, Title, Author_ID, ISBN, Total_Quantity, Available_Quantity)
   // inserts brand new row into catalog table with book details and stock count
