@@ -1,0 +1,151 @@
+/* ── Admin page shared styles ──────────────────────────────
+   Extends styles.css for the admin section. Mainly for update and 
+   new patron
+   Import both: styles.css first, then admin-styles.css
+────────────────────────────────────────────────────────── */
+
+/* Content panel inner wrapper */
+.content-inner {
+  padding: 28px 32px;
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+}
+
+.content-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 22px 0;
+}
+
+/* ── Admin form ─────────────────────────────────────────── */
+.admin-form {
+  width: 100%;
+  max-width: 480px;
+}
+
+.form-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #888;
+  margin: 0 0 12px 0;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+  font-size: 12px;
+}
+
+.form-row label {
+  min-width: 96px;
+  flex: 0 0 auto;
+  color: var(--text);
+}
+
+.form-row input {
+  flex: 1;
+  border: none;
+  border-bottom: 1px solid #999;
+  outline: none;
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 2px 2px 3px 2px;
+  background: transparent;
+  color: var(--text);
+}
+
+.form-row input:focus {
+  border-bottom-color: #555;
+}
+
+/* divider between lookup and update sections */
+.form-divider {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 24px 0;
+}
+
+/* ── Buttons ────────────────────────────────────────────── */
+.btn-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.btn {
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 5px 20px;
+  border: 1px solid #777;
+  background: #fff;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.btn:hover    { background: #f0f0f0; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn-primary {
+  background: #333;
+  color: #fff;
+  border-color: #333;
+}
+
+.btn-primary:hover    { background: #555; border-color: #555; }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── Feedback banner ────────────────────────────────────── */
+.feedback {
+  font-size: 12px;
+  margin-top: 14px;
+  min-height: 16px;
+  color: #b00;
+}
+
+.feedback.ok  { color: #2d6a3f; }
+.feedback.dim { color: transparent; }
+
+/* ── Active sidebar link ────────────────────────────────── */
+.link-item.active {
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .content-inner {
+    padding: 18px 16px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .form-row label {
+    min-width: unset;
+  }
+
+  .form-row input {
+    width: 100%;
+  }
+
+  .btn-row {
+    justify-content: stretch;
+  }
+
+  .btn,
+  .btn-primary {
+    flex: 1;
+    text-align: center;
+  }
+}
