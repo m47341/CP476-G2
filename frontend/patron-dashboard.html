@@ -5,6 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Patron Dashboard</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    .content-inner {
+      padding: 24px 28px;
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+    }
+    .content-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 0 0 18px 0;
+    }
+    .welcome-msg {
+      font-size: 12px;
+      color: #555;
+    }
+  </style>
 </head>
 <body class="menu-open">
   <div class="page">
@@ -24,7 +41,10 @@
         </aside>
 
         <main class="content">
-          <div class="blank-image"></div>
+          <div class="content-inner">
+            <div class="content-title">Welcome</div>
+            <div class="welcome-msg" id="welcomeMsg">Select an option from the menu to get started.</div>
+          </div>
         </main>
 
         <div class="bottom-center-btn" id="signOutBtn" title="Sign out" style="cursor:pointer;"></div>
@@ -45,6 +65,8 @@
     // ── Populate patron name ────────────────────────────────────────────────────
     const name = sessionStorage.getItem('patronName') || 'Patron';
     document.getElementById('patronLabel').textContent = name;
+    document.getElementById('welcomeMsg').textContent =
+      `Logged in as ${name}. Select an option from the menu to get started.`;
 
     // ── Nav links ───────────────────────────────────────────────────────────────
     document.getElementById('catalogLink').addEventListener('click', () => {
