@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patron Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="menu-open">
+  <div class="page">
+    <div class="screen">
+      <section id="menuView" class="menu-view">
+        <aside class="sidebar">
+          <div class="sidebar-top">
+            <div class="menu-title">Menu</div>
+            <div class="menu-item link-item" id="catalogLink">Catalog</div>
+            <div class="menu-item link-item" id="loansLink">Current Loans</div>
+          </div>
+
+          <div class="sidebar-bottom">
+            <div class="radio"></div>
+            <div id="patronLabel">Patron</div>
+          </div>
+        </aside>
+
+        <main class="content">
+          <div class="blank-image"></div>
+        </main>
+
+        <div class="bottom-center-btn" id="signOutBtn" title="Sign out" style="cursor:pointer;"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // ── Auth guard ──────────────────────────────────────────────────────────────
+    // Redirect immediately if no valid session exists
+    (function guard() {
+      const auth = sessionStorage.getItem('patronAuth');
+      if (auth !== 'true') {
+        window.location.replace('PatronSigninMenu.html');
+      }
+    })();
+
+    // ── Populate patron name ────────────────────────────────────────────────────
+    const name = sessionStorage.getItem('patronName') || 'Patron';
+    document.getElementById('patronLabel').textContent = name;
+
+    // ── Nav links ───────────────────────────────────────────────────────────────
+    document.getElementById('catalogLink').addEventListener('click', () => {
+      window.location.href = 'catalog.html';
+    });
+
+    document.getElementById('loansLink').addEventListener('click', () => {
+      window.location.href = 'current-loans.html';
+    });
+
+    // ── Sign out ────────────────────────────────────────────────────────────────
+    document.getElementById('signOutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('patronAuth');
+      sessionStorage.removeItem('patronName');
+      window.location.href = 'PatronSigninMenu.html';
+    });
+  </script>
+</body>
+</html>
