@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Current Loans</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ── page-specific additions ─────────────────────────── */
+    .content-inner {
+      padding: 24px 28px;
+      height: 100%;
+      overflow-y: auto;
+      position: absolute;
+      inset: 0;
+    }
+
+    .content-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 0 0 18px 0;
+    }
+
+    /* loans table */
+    .loans-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .loans-table th {
+      text-align: left;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      padding: 5px 8px 5px 0;
+    }
+
+    .loans-table td {
+      padding: 7px 8px 7px 0;
+      border-bottom: 1px solid #e8e8e8;
+      vertical-align: middle;
+    }
+
+    .loans-table tr:last-child td { border-bottom: none; }
+
+    .overdue {
+      color: #9b2626;
+      font-weight: 700;
+    }
+
+    .empty-state {
+      font-size: 12px;
+      color: #888;
+      padding: 12px 0;
+    }
+
+    .loading-state {
+      font-size: 12px;
+      color: #888;
+      padding: 12px 0;
+    }
+
+    .error-state {
+      font-size: 12px;
+      color: #b00;
+      padding: 12px 0;
+    }
+
+    /* active sidebar link */
+    .link-item.active {
+      font-weight: 700;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body class="menu-open">
+  <div class="page">
+    <div class="screen">
+      <section class="menu-view">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="sidebar-top">
+            <div class="menu-title">Menu</div>
+            <div class="menu-item link-item" id="catalogLink">Catalog</div>
+            <div class="menu-item link-item active" id="loansLink">Current Loans</div>
+          </div>
+          <div class="sidebar-bottom">
+            <div class="radio"></div>
+            <div id="patronLabel">Patron</div>
+          </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="content">
+          <div class="content-inner">
+            <div class="content-title">Current Loans</div>
+            <div id="loansBody">
+              <div class="loading-state">Loading your loans…</div>
+            </div>
+          </div>
+        </main>
+
+        <div class="bottom-center-btn" id="signOutBtn" title="Sign out" style="cursor:pointer;"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // ── Auth guard ───────────────────────────────────────────
+    (function guard() {
+      if (sessionStorage.getItem('patronAuth') !== 'true') {
+        window.location.replace('PatronSigninMenu.html');
+      }
+    })();
+
+    const patronName = sessionStorage.getItem('patronName') || 'Patron';
+    document.getElementById('patronLabel').textContent = patronName;
+
+    // ── Nav ──────────────────────────────────────────────────
+    document.getElementById('catalogLink').addEventListener('click', () => {
+      window.location.href = 'catalog.html';
+    });
+
+    // ── Sign out ─────────────────────────────────────────────
+    document.getElementById('signOutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('patronAuth');
+      sessionStorage.removeItem('patronName');
+      window.location.href = 'PatronSigninMenu.html';
+    });
+
+    // ── Load loans ───────────────────────────────────────────
+    async function loadLoans() {
+      const loansBody = document.getElementById('loansBody');
+
+      try {
+        const res = await fetch('http://localhost:3060/patron/patron-main-page', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ patron_name: patronName })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          loansBody.innerHTML = `<div class="error-state">${data.error || 'Could not load loans.'}</div>`;
+          return;
+        }
+
+        // Backend stub currently returns no loans array yet —
+        // render whatever loans the server sends, or an empty state.
+        const loans = Array.isArray(data.loans) ? data.loans : [];
+        renderLoans(loans, loansBody);
+
+      } catch (err) {
+        loansBody.innerHTML = '<div class="error-state">Unable to reach server. Please try again.</div>';
+      }
+    }
+
+    function renderLoans(loans, container) {
+      if (loans.length === 0) {
+        container.innerHTML = '<div class="empty-state">You have no books currently checked out.</div>';
+        return;
+      }
+
+      const table = document.createElement('table');
+      table.className = 'loans-table';
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Due Date</th>
+            <th>Fine</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+
+      const tbody = table.querySelector('tbody');
+      const today = new Date();
+
+      loans.forEach(loan => {
+        const due     = new Date(loan.Due_Date);
+        const overdue = due < today;
+        const tr      = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${escHtml(loan.Title || '—')}</td>
+          <td>${escHtml(loan.Author_Name || '—')}</td>
+          <td class="${overdue ? 'overdue' : ''}">${formatDate(loan.Due_Date)}</td>
+          <td>${loan.Fine ? `$${parseFloat(loan.Fine).toFixed(2)}` : '—'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      container.innerHTML = '';
+      container.appendChild(table);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '—';
+      const d = new Date(dateStr);
+      return isNaN(d) ? dateStr : d.toLocaleDateString('en-CA'); // YYYY-MM-DD
+    }
+
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    loadLoans();
+  </script>
+</body>
+</html>
