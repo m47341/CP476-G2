@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<!--
+******************************************************************************
+ * Name: Nicholas Perez
+ * Course: CP476B - Internet Computing
+ * Milestone: Milestone 02 - Front-End Implementation
+ * File: index.html
+ * Date: June, 20 2026
+ *
+ * Description:
+ * Front-end implementation of the Library Management System.
+ * This interface supports:
+ * - Admin Sign In
+ * - Book Search / Catalog
+ * - Add Book
+ *
+ * The interface was developed based on the approved Milestone 01
+ * wireframes and uses HTML, CSS, and JavaScript for functionality.
+******************************************************************************
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Ensure proper scaling on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Library Admin System</title>
+
+    <!-- External stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- Main application container -->
+    <main class="app-shell">
+
+        <!-- Landing page shown when application first loads -->
+        <section id="landingPage" class="screen active-screen centered-screen">
+            <div class="choice-card">
+
+                <h1>Library System</h1>
+
+                <!-- Patron login button (not implemented yet) -->
+                <button class="secondary-button" type="button">
+                    Library Patron Sign-in
+                </button>
+
+                <!-- Navigate to admin login screen -->
+                <button id="showAdminLoginBtn" type="button">
+                    Admin Sign-in
+                </button>
+
+            </div>
+        </section>
+
+        <!-- Admin login page -->
+        <section id="adminLoginPage" class="screen centered-screen">
+
+            <form id="adminLoginForm" class="form-card">
+
+                <h2>Admin Login</h2>
+
+                <label for="adminUsername">Username:</label>
+                <input
+                    id="adminUsername"
+                    name="adminUsername"
+                    type="text"
+                    required
+                >
+
+                <label for="adminPassword">Password:</label>
+                <input
+                    id="adminPassword"
+                    name="adminPassword"
+                    type="password"
+                    required
+                >
+
+                <!-- Submit login form -->
+                <button type="submit">Sign In</button>
+
+                <!-- Return to landing page -->
+                <button
+                    id="backToLandingBtn"
+                    class="secondary-button"
+                    type="button"
+                >
+                    Back
+                </button>
+
+            </form>
+        </section>
+
+        <!-- Main admin dashboard -->
+        <section id="adminAppPage" class="screen dashboard-screen">
+
+            <!-- Sidebar navigation menu -->
+            <aside class="sidebar">
+
+                <h2>Menu</h2>
+
+                <nav>
+
+                    <!-- Catalog view -->
+                    <button
+                        id="catalogNavBtn"
+                        class="nav-button active-nav"
+                        type="button"
+                    >
+                        Catalog
+                    </button>
+
+                    <!-- Future features -->
+                    <button class="nav-button disabled-nav" type="button">
+                        Check-in
+                    </button>
+
+                    <button class="nav-button disabled-nav" type="button">
+                        Check-out
+                    </button>
+
+                    <!-- Add Book view -->
+                    <button
+                        id="addBookNavBtn"
+                        class="nav-button"
+                        type="button"
+                    >
+                        Add Book
+                    </button>
+
+                </nav>
+
+                <!-- Admin identifier -->
+                <div class="admin-tag">
+                    <span class="admin-circle"></span>
+                    <span>Admin_xxxxxxxx</span>
+                </div>
+
+            </aside>
+
+            <!-- Main content area -->
+            <section class="content-panel">
+
+                <!-- Catalog / Search screen -->
+                <section
+                    id="catalogView"
+                    class="content-view active-view"
+                >
+
+                    <div class="page-header">
+                        <h1>Catalog</h1>
+
+                        <!-- Shortcut to Add Book page -->
+                        <button id="openAddBookBtn" type="button">
+                            Add Book
+                        </button>
+                    </div>
+
+                    <!-- Search form -->
+                    <form id="bookSearchForm" class="search-box">
+
+                        <label for="searchTitle">Title</label>
+                        <input
+                            id="searchTitle"
+                            type="text"
+                            placeholder="Search by title"
+                        >
+
+                        <label for="searchAuthor">Author</label>
+                        <input
+                            id="searchAuthor"
+                            type="text"
+                            placeholder="Search by author"
+                        >
+
+                        <button type="submit">Search</button>
+
+                        <!-- Clear search fields -->
+                        <button
+                            id="clearSearchBtn"
+                            class="secondary-button"
+                            type="button"
+                        >
+                            Clear
+                        </button>
+
+                    </form>
+
+                    <!-- Search results populated by JavaScript -->
+                    <div id="bookResults" class="book-results"></div>
+
+                </section>
+
+                <!-- Add Book screen -->
+                <section
+                    id="addBookView"
+                    class="content-view"
+                >
+
+                    <h1>Add Book</h1>
+
+                    <form
+                        id="addBookForm"
+                        class="form-card inline-form-card"
+                    >
+
+                        <label for="bookCode">Book Code:</label>
+                        <input
+                            id="bookCode"
+                            type="text"
+                            required
+                        >
+
+                        <label for="newTitle">Title:</label>
+                        <input
+                            id="newTitle"
+                            type="text"
+                            required
+                        >
+
+                        <label for="newAuthor">Author:</label>
+                        <input
+                            id="newAuthor"
+                            type="text"
+                            required
+                        >
+
+                        <!-- Submit new book -->
+                        <button type="submit">Submit</button>
+
+                        <!-- Return to catalog screen -->
+                        <button
+                            id="returnToCatalogBtn"
+                            class="secondary-button"
+                            type="button"
+                        >
+                            Return
+                        </button>
+
+                    </form>
+
+                </section>
+
+            </section>
+
+        </section>
+
+    </main>
+
+    <!-- Success confirmation modal -->
+    <div id="successModal" class="modal hidden">
+
+        <div class="modal-box">
+
+            <!-- Close modal -->
+            <button
+                id="closeModalBtn"
+                class="modal-close"
+                type="button"
+            >
+                ×
+            </button>
+
+            <p>Save Successful</p>
+
+        </div>
+
+    </div>
+
+    <!-- JavaScript functionality -->
+    <script src="script.js"></script>
+
+</body>
+</html>
