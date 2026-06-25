@@ -3,86 +3,124 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Parton Login</title>
+  <title>Patron Login</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    .login-btn {
+      margin-top: 22px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .login-btn button {
+      font-size: 12px;
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 5px 18px;
+      border: 1px solid #777;
+      background: #fff;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .login-btn button:hover {
+      background: #f0f0f0;
+    }
+
+    .login-btn button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .error-msg {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #b00;
+      min-height: 16px;
+    }
+  </style>
 </head>
 <body>
   <div class="page">
     <div class="screen">
       <section id="loginView" class="login-view">
-        <h1 class="title">Parton Login</h1>
+        <h1 class="title">Patron Login</h1>
 
         <div class="login-box">
           <div class="field">
-            <span>Username:</span>
-            <input id="username" type="text" autocomplete="off" />
+            <span>Email:</span>
+            <input id="emailInput" type="email" autocomplete="off" placeholder="patron@library.org" />
           </div>
 
           <div class="field">
             <span>Password:</span>
-            <input id="password" type="password" autocomplete="off" />
+            <input id="passwordInput" type="password" autocomplete="off" />
           </div>
+
+          <div class="login-btn">
+            <button id="loginBtn" type="button">Sign In</button>
+          </div>
+
+          <div class="error-msg" id="errorMsg" aria-live="polite"></div>
         </div>
-      </section>
-
-      <section id="menuView" class="menu-view hidden">
-        <aside class="sidebar">
-          <div class="sidebar-top">
-            <div class="menu-title">Menu</div>
-            <div class="menu-item link-item" id="catalogLink">Catalog</div>
-            <div class="menu-item link-item" id="loansLink">Current Loans</div>
-          </div>
-
-          <div class="sidebar-bottom">
-            <div class="radio"></div>
-            <div id="patronLabel">Patron_xxxxxxxx</div>
-          </div>
-        </aside>
-
-        <main class="content">
-          <div class="blank-image"></div>
-        </main>
-
-        <div class="bottom-center-btn"></div>
       </section>
     </div>
   </div>
 
   <script>
-    const loginView = document.getElementById('loginView');
-    const menuView = document.getElementById('menuView');
-    const username = document.getElementById('username');
-    const password = document.getElementById('password');
-    const patronLabel = document.getElementById('patronLabel');
-    const catalogLink = document.getElementById('catalogLink');
-    const loansLink = document.getElementById('loansLink');
+    const emailInput    = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const loginBtn      = document.getElementById('loginBtn');
+    const errorMsg      = document.getElementById('errorMsg');
 
-    function goToMenu() {
-      const entered = username.value.trim();
-      patronLabel.textContent = entered ? `Patron_${entered}` : 'Patron_xxxxxxxx';
-      loginView.classList.add('hidden');
-      menuView.classList.remove('hidden');
-      document.body.classList.add('menu-open');
+    async function attemptLogin() {
+      const email    = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      errorMsg.textContent = '';
+
+      if (!email || !password) {
+        errorMsg.textContent = 'Please enter your email and password.';
+        return;
+      }
+
+      loginBtn.disabled    = true;
+      loginBtn.textContent = 'Signing in…';
+
+      try {
+        const res = await fetch('http://localhost:3060/auth/patron-sign-in', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            patron_email:    email,
+            patron_password: password
+          })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          // Store authenticated patron name for the dashboard
+          sessionStorage.setItem('patronAuth', 'true');
+          sessionStorage.setItem('patronName', data.message.replace('Welcome ', ''));
+          window.location.href = 'patron-dashboard.html';
+        } else {
+          errorMsg.textContent = data.error || 'Login failed. Please try again.';
+          loginBtn.disabled    = false;
+          loginBtn.textContent = 'Sign In';
+        }
+      } catch (err) {
+        errorMsg.textContent = 'Unable to reach server. Please try again.';
+        loginBtn.disabled    = false;
+        loginBtn.textContent = 'Sign In';
+      }
     }
 
-    function submitIfAnyEntry() {
-      if (username.value.trim() || password.value.trim()) goToMenu();
-    }
+    loginBtn.addEventListener('click', attemptLogin);
 
-    username.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') submitIfAnyEntry();
-    });
-
-    password.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') submitIfAnyEntry();
-    });
-
-    catalogLink.addEventListener('click', () => {
-      window.location.href = 'catalog.html';
-    });
-
-    loansLink.addEventListener('click', () => {
-      window.location.href = 'current-loans.html';
+    [emailInput, passwordInput].forEach(input => {
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') attemptLogin();
+      });
     });
   </script>
 </body>
