@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Update Patron</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="admin-styles.css" />
+</head>
+<body class="menu-open">
+  <div class="page">
+    <div class="screen">
+      <section class="menu-view">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="sidebar-top">
+            <div class="menu-title">Admin</div>
+            <div class="menu-item link-item" id="newPatronLink">New Patron</div>
+            <div class="menu-item link-item active" id="updatePatronLink">Update Patron</div>
+          </div>
+          <div class="sidebar-bottom">
+            <div class="radio"></div>
+            <div id="adminLabel">Admin</div>
+          </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="content">
+          <div class="content-inner">
+            <div class="content-title">Update Patron</div>
+
+            <div class="admin-form">
+
+              <!-- Step 1: look up the patron -->
+              <div class="form-section-label">Find Patron</div>
+
+              <div class="form-row">
+                <label for="lookupName">Current Name</label>
+                <input id="lookupName" type="text" autocomplete="off" placeholder="Exact name on record" />
+              </div>
+
+              <hr class="form-divider" />
+
+              <!-- Step 2: new values -->
+              <div class="form-section-label">Updated Details</div>
+
+              <div class="form-row">
+                <label for="newName">New Name</label>
+                <input id="newName" type="text" autocomplete="off" placeholder="Leave blank to keep current" />
+              </div>
+
+              <div class="form-row">
+                <label for="newEmail">New Email</label>
+                <input id="newEmail" type="email" autocomplete="off" placeholder="Leave blank to keep current" />
+              </div>
+
+              <div class="form-row">
+                <label for="newPassword">New Password</label>
+                <input id="newPassword" type="password" autocomplete="off" placeholder="Leave blank to keep current" />
+              </div>
+
+              <div class="form-row">
+                <label for="newPasswordConfirm">Confirm</label>
+                <input id="newPasswordConfirm" type="password" autocomplete="off" placeholder="Re-enter new password" />
+              </div>
+
+              <div class="btn-row">
+                <button class="btn" id="clearBtn" type="button">Clear</button>
+                <button class="btn btn-primary" id="submitBtn" type="button">Save Changes</button>
+              </div>
+
+              <div class="feedback" id="feedback" aria-live="polite"></div>
+            </div>
+          </div>
+        </main>
+
+        <div class="bottom-center-btn" id="signOutBtn" title="Sign out" style="cursor:pointer;"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // ── Auth guard (admin only) ──────────────────────────────
+    (function guard() {
+      if (sessionStorage.getItem('adminAuth') !== 'true') {
+        window.location.replace('AdminSigninMenu.html');
+      }
+    })();
+
+    const adminName = sessionStorage.getItem('adminName') || 'Admin';
+    document.getElementById('adminLabel').textContent = adminName;
+
+    // ── Nav ──────────────────────────────────────────────────
+    document.getElementById('newPatronLink').addEventListener('click', () => {
+      window.location.href = 'new-patron.html';
+    });
+
+    // ── Sign out ─────────────────────────────────────────────
+    document.getElementById('signOutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('adminAuth');
+      sessionStorage.removeItem('adminName');
+      window.location.href = 'AdminSigninMenu.html';
+    });
+
+    // ── Form elements ────────────────────────────────────────
+    const lookupName    = document.getElementById('lookupName');
+    const newName       = document.getElementById('newName');
+    const newEmail      = document.getElementById('newEmail');
+    const newPassword   = document.getElementById('newPassword');
+    const newPwConfirm  = document.getElementById('newPasswordConfirm');
+    const submitBtn     = document.getElementById('submitBtn');
+    const clearBtn      = document.getElementById('clearBtn');
+    const feedback      = document.getElementById('feedback');
+
+    function setFeedback(msg, type) {
+      feedback.textContent = msg;
+      feedback.className   = 'feedback' + (type ? ` ${type}` : '');
+    }
+
+    function clearForm() {
+      lookupName.value   = '';
+      newName.value      = '';
+      newEmail.value     = '';
+      newPassword.value  = '';
+      newPwConfirm.value = '';
+      setFeedback('', 'dim');
+      lookupName.focus();
+    }
+
+    clearBtn.addEventListener('click', clearForm);
+
+    async function submitUpdate() {
+      setFeedback('', '');
+
+      const lookup   = lookupName.value.trim();
+      const name     = newName.value.trim();
+      const email    = newEmail.value.trim();
+      const password = newPassword.value;
+      const confirm  = newPwConfirm.value;
+
+      // Validation
+      if (!lookup) {
+        setFeedback('Current patron name is required to look up the record.'); return;
+      }
+      if (!name && !email && !password) {
+        setFeedback('Enter at least one field to update.'); return;
+      }
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setFeedback('Please enter a valid email address.'); return;
+      }
+      if (password && password !== confirm) {
+        setFeedback('Passwords do not match.'); return;
+      }
+      if (password && password.length < 6) {
+        setFeedback('New password must be at least 6 characters.'); return;
+      }
+
+      submitBtn.disabled    = true;
+      submitBtn.textContent = 'Saving…';
+
+      try {
+        const res = await fetch('http://localhost:3060/admin/update-patron', {
+          method:  'GET',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            Patron_Name:         lookup,
+            New_Patron_Name:     name     || lookup,   // keep current if blank
+            New_Patron_Email:    email    || undefined,
+            New_Patron_Password: password || undefined
+          })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          setFeedback(`Patron "${lookup}" updated successfully.`, 'ok');
+          // Clear only the update fields; keep lookup name in case admin wants to update more
+          newName.value      = '';
+          newEmail.value     = '';
+          newPassword.value  = '';
+          newPwConfirm.value = '';
+        } else {
+          setFeedback(data.error || 'Update failed. Please check the patron name and try again.');
+        }
+      } catch (err) {
+        setFeedback('Unable to reach server. Please try again.');
+      } finally {
+        submitBtn.disabled    = false;
+        submitBtn.textContent = 'Save Changes';
+      }
+    }
+
+    submitBtn.addEventListener('click', submitUpdate);
+
+    // Enter key submits from any field
+    [lookupName, newName, newEmail, newPassword, newPwConfirm].forEach(el => {
+      el.addEventListener('keydown', e => { if (e.key === 'Enter') submitUpdate(); });
+    });
+  </script>
+</body>
+</html>
