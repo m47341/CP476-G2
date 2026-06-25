@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catalog</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ── page-specific additions ─────────────────────────── */
+    .content-inner {
+      padding: 24px 28px;
+      height: 100%;
+      overflow-y: auto;
+      position: absolute;
+      inset: 0;
+    }
+
+    .content-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 0 0 18px 0;
+    }
+
+    /* search form */
+    .search-form {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .search-form input {
+      flex: 1;
+      min-width: 140px;
+      border: none;
+      border-bottom: 1px solid #999;
+      outline: none;
+      font-size: 12px;
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 2px 2px 3px 2px;
+      background: transparent;
+      color: var(--text);
+    }
+
+    .search-form button {
+      font-size: 12px;
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 4px 16px;
+      border: 1px solid #777;
+      background: #fff;
+      cursor: pointer;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .search-form button:hover  { background: #f0f0f0; }
+    .search-form button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* results table */
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .results-table th {
+      text-align: left;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      padding: 5px 8px 5px 0;
+    }
+
+    .results-table td {
+      padding: 7px 8px 7px 0;
+      border-bottom: 1px solid #e8e8e8;
+      vertical-align: middle;
+    }
+
+    .results-table tr:last-child td { border-bottom: none; }
+
+    .hold-btn {
+      font-size: 11px;
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 3px 10px;
+      border: 1px solid #999;
+      background: #fff;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .hold-btn:hover    { background: #f0f0f0; }
+    .hold-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .status-badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 3px;
+    }
+
+    .status-available  { background: #e6f4ea; color: #2d6a3f; }
+    .status-unavailable { background: #fce8e8; color: #9b2626; }
+
+    /* feedback messages */
+    .feedback {
+      font-size: 12px;
+      margin-bottom: 14px;
+      min-height: 16px;
+      color: #b00;
+    }
+    .feedback.ok { color: #2d6a3f; }
+
+    .empty-state {
+      font-size: 12px;
+      color: #888;
+      padding: 12px 0;
+    }
+
+    /* active sidebar link */
+    .link-item.active {
+      font-weight: 700;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body class="menu-open">
+  <div class="page">
+    <div class="screen">
+      <section class="menu-view">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="sidebar-top">
+            <div class="menu-title">Menu</div>
+            <div class="menu-item link-item active" id="catalogLink">Catalog</div>
+            <div class="menu-item link-item" id="loansLink">Current Loans</div>
+          </div>
+          <div class="sidebar-bottom">
+            <div class="radio"></div>
+            <div id="patronLabel">Patron</div>
+          </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="content">
+          <div class="content-inner">
+            <div class="content-title">Catalog</div>
+
+            <div class="search-form">
+              <input id="titleInput"  type="text" placeholder="Title"  autocomplete="off" />
+              <input id="authorInput" type="text" placeholder="Author" autocomplete="off" />
+              <button id="searchBtn" type="button">Search</button>
+            </div>
+
+            <div class="feedback" id="feedback" aria-live="polite"></div>
+
+            <div id="resultsWrap"></div>
+          </div>
+        </main>
+
+        <div class="bottom-center-btn" id="signOutBtn" title="Sign out" style="cursor:pointer;"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // ── Auth guard ───────────────────────────────────────────
+    (function guard() {
+      if (sessionStorage.getItem('patronAuth') !== 'true') {
+        window.location.replace('PatronSigninMenu.html');
+      }
+    })();
+
+    const patronName = sessionStorage.getItem('patronName') || 'Patron';
+    document.getElementById('patronLabel').textContent = patronName;
+
+    // ── Nav ──────────────────────────────────────────────────
+    document.getElementById('loansLink').addEventListener('click', () => {
+      window.location.href = 'current-loans.html';
+    });
+    // catalogLink is the current page — no nav needed
+
+    // ── Sign out ─────────────────────────────────────────────
+    document.getElementById('signOutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('patronAuth');
+      sessionStorage.removeItem('patronName');
+      window.location.href = 'PatronSigninMenu.html';
+    });
+
+    // ── Search ───────────────────────────────────────────────
+    const titleInput  = document.getElementById('titleInput');
+    const authorInput = document.getElementById('authorInput');
+    const searchBtn   = document.getElementById('searchBtn');
+    const feedback    = document.getElementById('feedback');
+    const resultsWrap = document.getElementById('resultsWrap');
+
+    async function runSearch() {
+      const title  = titleInput.value.trim();
+      const author = authorInput.value.trim();
+
+      feedback.textContent = '';
+      feedback.className   = 'feedback';
+      resultsWrap.innerHTML = '';
+
+      if (!title && !author) {
+        feedback.textContent = 'Enter a title or author to search.';
+        return;
+      }
+
+      searchBtn.disabled    = true;
+      searchBtn.textContent = 'Searching…';
+
+      try {
+        const res = await fetch('http://localhost:3060/patron/patron-book-search', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ Title: title, Author_Name: author })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          feedback.textContent = data.error || 'No results found.';
+        } else {
+          renderResults(data.books);
+        }
+      } catch (err) {
+        feedback.textContent = 'Unable to reach server. Please try again.';
+      } finally {
+        searchBtn.disabled    = false;
+        searchBtn.textContent = 'Search';
+      }
+    }
+
+    function renderResults(books) {
+      if (!books || books.length === 0) {
+        resultsWrap.innerHTML = '<div class="empty-state">No books found matching your search.</div>';
+        return;
+      }
+
+      const table = document.createElement('table');
+      table.className = 'results-table';
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+
+      const tbody = table.querySelector('tbody');
+
+      books.forEach(book => {
+        const available = book.Copies_Available > 0;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${escHtml(book.Title)}</td>
+          <td>${escHtml(book.Author_Name || '—')}</td>
+          <td>
+            <span class="status-badge ${available ? 'status-available' : 'status-unavailable'}">
+              ${available ? 'Available' : 'Checked Out'}
+            </span>
+          </td>
+          <td>
+            ${!available
+              ? `<button class="hold-btn" data-id="${book.ID}">Put on Hold</button>`
+              : ''}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      table.querySelectorAll('.hold-btn').forEach(btn => {
+        btn.addEventListener('click', () => placeHold(btn));
+      });
+
+      resultsWrap.appendChild(table);
+    }
+
+    async function placeHold(btn) {
+      const bookId = btn.dataset.id;
+      btn.disabled    = true;
+      btn.textContent = '…';
+
+      try {
+        const res = await fetch('http://localhost:3060/patron/put-book-on-hold', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ User_ID: sessionStorage.getItem('patronId') || '', Book_ID: bookId })
+        });
+
+        const data = await res.json();
+
+        feedback.textContent = data.message || data.error || 'Hold request sent.';
+        feedback.className   = 'feedback' + (data.success ? ' ok' : '');
+        btn.textContent = data.success ? 'Hold placed' : 'Try again';
+        if (!data.success) btn.disabled = false;
+      } catch (err) {
+        feedback.textContent = 'Unable to reach server.';
+        btn.textContent = 'Try again';
+        btn.disabled    = false;
+      }
+    }
+
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    searchBtn.addEventListener('click', runSearch);
+    [titleInput, authorInput].forEach(el => {
+      el.addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
+    });
+  </script>
+</body>
+</html>
