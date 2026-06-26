@@ -52,19 +52,28 @@ CREATE TABLE HOLDS (
 );
 
 
--- mock data (for testing)
+-- mock data (for testing) 
 INSERT INTO USERS (Name, Email, Password, Role) VALUES 
 ('Jonathan Medly', 'john@mail.com', 'admin123', 'Admin'),
-('Jebediah Smith', 'jeb@email.com', 'pass123', 'Patron');
+('Alice Boss', 'alice@mail.com', 'admin456', 'Admin'),
+('Jebediah Smith', 'jeb@email.com', 'pass123', 'Patron'),
+('Sarah Reader', 'sarah@email.com', 'pass456', 'Patron');
 
 INSERT INTO AUTHORS (Name) VALUES 
-('Mary Shelley'),
+('J. K. Rowling'),
+('Harper Lee'),
+('F. Scott Fitzgerald'),
+('J. R. R. Tolkien'),
 ('George Orwell');
 
 INSERT INTO BOOKS (Title, Author_ID, ISBN, Total_Quantity, Available_Quantity) VALUES 
-('Frankenstein', 1, '9780143131847', 3, 2),
-('1984', 2, '9780451524935', 1, 0);
+('Harry Potter and the Sorcerer''s Stone', 1, '9780590353427', 3, 2),
+('To Kill a Mockingbird', 2, '9780060935467', 1, 0),
+('The Great Gatsby', 3, '9780743273565', 2, 2),
+('The Hobbit', 4, '9780547928227', 4, 4),
+('1984', 5, '9780451524935', 2, 2);
 
--- mock loan, Jebediah has 1984 checked out
-INSERT INTO LOANS (User_ID, Book_ID, Borrow_Date, Due_Date, Returned_Date, Fine_amount) VALUES 
-(2, 2, '2026-06-10', '2026-06-24', NULL, 0.00);
+-- mock loan, Jebediah has 'To Kill a Mockingbird' checked out
+INSERT INTO LOANS (User_ID, Book_ID, Borrow_Date, Due_Date, Returned_Date, Fine_amount)
+VALUES (3, 2, '2026-06-01', '2026-06-15', NULL, 0.00);
+
