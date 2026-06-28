@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Admin</title>
+        <link rel="stylesheet" href="adminStyles.css"/>
+        <script src="admin.js"></script>
+    </head>
+    <body>
+        <div class="page">
+            <div class="screen">
+                <section id="menuView" class="menu-view">
+                    <aside class="sidebar">
+                        <div class="menu-title" onclick="menuClick()">Menu</div>
+                        <!-- openMenu messes up sidebar-bottom css -->
+                        <div id="openMenu">
+                            <div class="sidebar-top">
+                                <div class="menu-item link-item" id="catalogLink" onclick="changePage(this)">Catalog</div>
+                                <div class="menu-item link-item" id="checkInLink" onclick="changePage(this)">Check-in</div>
+                                <div class="menu-item link-item" id="checkOutLink" onclick="changePage(this)">Check-out</div>
+                                <div class="menu-item link-item" id="newPatronLink" onclick="changePage(this)">New Patron</div>
+                                <div class="menu-item link-item" id="updatePatronLink" onclick="changePage(this)">Update Patron</div>
+                            </div>
+
+                            <div class="sidebar-bottom">
+                                <div id="adminLabel">Admin_XXXXXX</div>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <main class="content">
+                        <div id="checkInForm" hidden>
+                            <form method="post">
+                                <fieldset>
+                                    <legend>Check in</legend>
+                                    <p>
+                                        <label>Book Code: </label>
+                                        <input type="text" name="cInBookCode" autocapitalize="off" autocomplete="off" autocorrect="off"/>
+                                    </p>
+                                    <p>
+                                        <label>Patron: </label>
+                                        <input type="text" name="cInPatron" autocapitalize="off" autocomplete="off" autocorrect="off"/>
+                                    </p>
+                                    <button onclick="checkInSubmit(event)">Save</button>
+                                    <input type="reset"/>
+                                </fieldset>
+                            </form>
+                        </div>
+
+                        <div id="onCheckInSubmit" hidden>
+                            <p id="bookCode"></p>
+                            <p>Available for check out.</p>
+                            <p id="patron"></p>
+                            <p>Able to borrow book.</p>
+                        </div>
+                        
+                        <div id="checkOutForm" hidden>
+                            <form method="post">
+                                <fieldset>
+                                    <legend>Check out</legend>
+                                    <p>
+                                        <label>Book Code: </label>
+                                        <input type="text" name="cOutBookCode" autocapitalize="off" autocomplete="off" autocorrect="off"/>
+                                    </p>
+                                    <p>
+                                        <label>Patron: </label>
+                                        <input type="text" name="cOutPatron" autocapitalize="off" autocomplete="off" autocorrect="off"/>
+                                    </p>
+                                    <button onclick="checkOutSubmit(event)">Save</button>
+                                    <input type="reset"/>
+                                </fieldset>
+                            </form>
+
+                            <div id="onCheckOutSubmit" hidden>
+                                <p id="bookCode"></p>
+                                <p id="patron"></p>
+                                <p>Ready to return.</p>
+                            </div>
+                        </div>
+                    </main>
+                </section>   
+            </div>
+        </div>
+    </body>
+</html>

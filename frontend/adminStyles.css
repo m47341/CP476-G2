@@ -1,0 +1,142 @@
+:root {
+  --border:#b8b8b8;
+  --text:#333;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin:0;
+  width:100%;
+  height:100%;
+  font-family: 'Calibri', Arial, Helvetica, sans-serif;
+  color:var(--text);
+  background:#fff;
+}
+
+.page {
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+}
+
+.screen {
+  width: 100%;
+  min-height:calc(100vh - 30px);
+  border:1px solid #bbb;
+  background:#fff;
+  position:relative;
+  overflow:hidden;
+}
+
+.hidden {
+  display:none !important;
+}
+
+/* Menu page */
+.menu-view {
+  display:grid;
+  grid-template-columns: 25% 1fr;
+  gap:10px;
+  height:100%;
+  min-height:calc(100vh - 30px);
+  position:relative;
+}
+
+.sidebar {
+  border:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  background:#fff;
+}
+
+.menu-title {
+  font-size: 200%;
+  font-weight:700;
+  padding: 14px 0 7px 10%;
+}
+
+.menu-item {
+  font-size: 100%;
+  padding: 7px 0 7px 10%;
+}
+
+.menu-item:hover {
+  background-color: lightgrey;
+}
+
+.link-item {
+  cursor:pointer;
+  user-select:none;
+}
+
+.link-item:hover {
+  text-decoration: underline;
+}
+
+.sidebar-bottom {
+  border-top:1px solid #d1d1d1;
+  padding:11px 8px;
+  display:flex;
+  align-items:flex-end;
+  gap:6px;
+  font-size:100%;
+}
+
+.radio {
+  width:16px;
+  height:16px;
+  border:1px solid #b3b3b3;
+  border-radius:50%;
+  flex:0 0 auto;
+}
+
+/* Main content */
+legend {
+  font-family: 'Calibri', Arial, Helvetica, sans-serif;
+  color:var(--text);
+  font-size: 150%;
+}
+
+.content {
+  border:1px solid var(--border);
+  position:relative;
+  overflow:hidden;
+  background:#fff;
+  padding: 10px 7px 0 7px;
+}
+
+.blank-image {
+  position:absolute;
+  inset:0;
+  background-color:#fff;
+  background-image:
+    linear-gradient(45deg, transparent calc(50% - 1px), #4a4a4a calc(50% - 1px), #4a4a4a calc(50% + 1px), transparent calc(50% + 1px)),
+    linear-gradient(-45deg, transparent calc(50% - 1px), #4a4a4a calc(50% - 1px), #4a4a4a calc(50% + 1px), transparent calc(50% + 1px));
+}
+
+body.menu-open {
+  overflow:hidden;
+}
+
+#bookCode, #patron {
+  font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 700px){
+  .title,
+  .menu-title{
+    font-size:150%;
+  }
+
+  .field,
+  .menu-item,
+  .sidebar-bottom {
+    font-size:100%;
+    overflow:scroll;
+  }
+}
