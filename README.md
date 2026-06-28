@@ -4,8 +4,6 @@ Internet Computing (CP476) - Group 2
 
 ## Overview
 
-(improve later)
-
 A full stack library management system. For finding and getting books, handling data management, and more.
 
 ## Prerequisites
@@ -22,16 +20,19 @@ npm install express cors body-parser mysql2
 
 ## Running
 
-this is more just personal notes for me, ignore for now
-on another note, will need to test in other enviornments to see if my results are reproducible, but thats a later problem
+### Backend
 
-### start and verify the db daemon
+(instructions are for a linux environment, can generalize to other platforms)
+
+#### start and verify the db daemon
+
+make sure mysql is installed
 
 ```bash
 sudo systemctl start mysql && sudo systemctl status mysql
 ```
 
-### seed db schema and mock data
+#### seed db schema and mock data
 
 ```bash
 mysql -u root -p < database/init.sql
@@ -39,7 +40,7 @@ mysql -u root -p < database/init.sql
 
 Password: `pass123`
 
-### boot backend server
+#### start backend server
 
 ```bash
 node backend/server.js
