@@ -93,7 +93,8 @@ curl http://localhost:3060/admin/overdue-book-list
 
 ### Max Schwarzenberg
 
-- (brief contributions)
+- database: Worked on the SQL create tables and part of the ER diagram
+- backend: Worked on `server.js` and `database.js`
 
 ### Inam Ul Haque
 
