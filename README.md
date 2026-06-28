@@ -89,6 +89,50 @@ curl -X POST http://localhost:3060/admin/check-in -H "Content-Type: application/
 curl http://localhost:3060/admin/overdue-book-list
 ```
 
+## Contributions (For Milestone 2)
+
+### Max Schwarzenberg
+
+- (brief contributions)
+
+### Inam Ul Haque
+
+- (brief contributions)
+
+### Sarah Jackson
+
+- (brief contributions)
+
+### Abdullahi Isa
+
+- (brief contributions)
+
+### Anubhav Pandey
+
+- (brief contributions)
+
+### Sienna Brar
+
+- (brief contributions)
+
+### Christian Simon
+
+- (brief contributions)
+
+### Melanie Tran
+
+- (brief contributions)
+
+### Carter Woods
+
+- (brief contributions)
+
+### Nicholas Perez
+
+- (brief contributions)
+
+---
+
 ## Members
 
 - Max Schwarzenberg
