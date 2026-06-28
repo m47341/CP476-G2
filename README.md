@@ -114,7 +114,7 @@ curl http://localhost:3060/admin/overdue-book-list
 
 ### Sienna Brar
 
-- Implemented front end html and css files for patron sign in, landing page, catalog, current loans, and admin update and add pagron
+- Implemented front end html and css files for patron sign in, landing page, catalog, current loans, and admin update and add patron
 
 ### Christian Simon
 
@@ -122,7 +122,7 @@ curl http://localhost:3060/admin/overdue-book-list
 
 ### Melanie Tran
 
-- (brief contributions)
+- Implemented front end HTML, CSS, and JS files for admin main page, admin check in, and admin check out pages.
 
 ### Carter Woods
 
