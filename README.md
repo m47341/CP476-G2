@@ -126,7 +126,7 @@ curl http://localhost:3060/admin/overdue-book-list
 
 ### Carter Woods
 
-- (brief contributions)
+- Implemented backend Node.js for landing page, patron sign-in, patron main page, new patron, update patron, book search (patron), and add book
 
 ### Nicholas Perez
 
