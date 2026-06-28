@@ -114,7 +114,7 @@ curl http://localhost:3060/admin/overdue-book-list
 
 ### Sienna Brar
 
-- (brief contributions)
+- Implemented front end html and css files for patron sign in, landing page, catalog, current loans, and admin update and add pagron
 
 ### Christian Simon
 
