@@ -102,7 +102,7 @@ curl http://localhost:3060/admin/overdue-book-list
 
 ### Sarah Jackson
 
-- Implemented backend Node.js for admin sign in, Admin main page, check in page, check out page, book search (admin), overdue book list, and put book on hold.
+- Implemented backend Node.js for admin sign in, admin main page, check in page, check out page, book search (admin), overdue book list, and put book on hold.
 
 ### Abdullahi Isa
 
@@ -110,7 +110,7 @@ curl http://localhost:3060/admin/overdue-book-list
 
 ### Anubhav Pandey
 
--Handled review and validation for the database work. Reviewed the create-table SQL to confirm it matched the schema and tested that it ran correctly, then verified the ER diagram's entities, attributes, and one-to-many connections lined up with the tables before everything went into the Milestone 2 report.
+- Handled review and validation for the database work. Reviewed the create-table SQL to confirm it matched the schema and tested that it ran correctly, then verified the ER diagram's entities, attributes, and one-to-many connections lined up with the tables before everything went into the Milestone 2 report.
 
 ### Sienna Brar
 
