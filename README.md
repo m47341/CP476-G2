@@ -102,7 +102,7 @@ curl http://localhost:3060/admin/overdue-book-list
 
 ### Sarah Jackson
 
-- (brief contributions)
+- Implemented backend Node.js for admin sign in, Admin main page, check in page, check out page, book search (admin), overdue book list, and put book on hold.
 
 ### Abdullahi Isa
 
