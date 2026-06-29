@@ -118,7 +118,7 @@ curl http://localhost:3060/admin/overdue-book-list
 
 ### Christian Simon
 
-- (brief contributions)
+- Implemented front end HTML and CSS files for Landing page
 
 ### Melanie Tran
 
