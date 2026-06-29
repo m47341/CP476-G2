@@ -130,9 +130,10 @@ curl http://localhost:3060/admin/overdue-book-list
 
 ### Nicholas Perez
 
-- (brief contributions)
+- Designed and implemented the low-fidelity Admin Sign-In frontend interface.
+- Developed the low-fidelity Admin Book Search frontend, including the search layout and user interface.
+- Created the low-fidelity Add Book frontend interface, including the form layout for adding new books.
 
----
 
 ## Members
 
