@@ -1,6 +1,7 @@
 // handles signing in for both types of users
 const express = require("express");
 const db = require("./database");
+const bcrypt = require("bcryptjs");
 const router = express.Router();
 
 router.post("/patron-sign-in", patronSignIn);
@@ -12,8 +13,25 @@ async function patronSignIn(req, res) {
   // gets email and password from frontend form and checks if matches a record in database
 
   // Extract email and password
-  const patronEmail = req.body.patron_email;
-  const patronPassword = req.body.patron_password;
+  const patronEmail = (req.body.patron_email || "").trim();
+  const patronPassword = req.body.patron_password || "";
+
+  // validation
+  if (!patronEmail || !patronPassword) {
+    return res
+      .status(400)
+      .json({ success: false, error: "Email and password are required" });
+  }
+
+  function isValidEmail(email) {
+    return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
+  }
+
+  if (!isValidEmail(patronEmail)) {
+    return res
+      .status(400)
+      .json({ success: false, error: "Invalid email format" });
+  }
 
   try {
     // Database Verification
@@ -35,8 +53,8 @@ async function patronSignIn(req, res) {
         .status(403)
         .json({ success: false, error: "Unauthorized access" });
     }
-
-    if (user.Password !== patronPassword) {
+    const passwordMatches = await bcrypt.compare(patronPassword, user.Password);
+    if (!passwordMatches) {
       return res
         .status(401)
         .json({ success: false, error: "Invalid email or password." });
@@ -54,9 +72,25 @@ async function adminSignIn(req, res) {
   // table: USERS (ID, Name, Email, Password, Role [Admin])
   // checks login details against database and confirms if user role is actually an admin
 
-  // Extract email and password
-  const adminEmail = req.body.admin_email;
-  const adminPassword = req.body.admin_password;
+  // extract email and password
+  const adminEmail = (req.body.admin_email || "").trim();
+  const adminPassword = req.body.admin_password || "";
+
+  if (!adminEmail || !adminPassword) {
+    return res
+      .status(400)
+      .json({ success: false, error: "Email and password are required" });
+  }
+
+  function isValidEmail(email) {
+    return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
+  }
+
+  if (!isValidEmail(adminEmail)) {
+    return res
+      .status(400)
+      .json({ success: false, error: "Invalid email format" });
+  }
 
   try {
     // Database Verification
@@ -78,8 +112,8 @@ async function adminSignIn(req, res) {
         .status(403)
         .json({ success: false, error: "Unauthorized access" });
     }
-
-    if (user.Password !== adminPassword) {
+    const passwordMatches = await bcrypt.compare(adminPassword, user.Password);
+    if (!passwordMatches) {
       return res
         .status(401)
         .json({ success: false, error: "Invalid email or password." });

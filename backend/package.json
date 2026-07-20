@@ -15,7 +15,8 @@
     "body-parser": "^2.3.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "mysql2": "^3.22.5"
+    "mysql2": "^3.22.5",
+    "bcryptjs": "^2.4.3"
   },
   "devDependencies": {}
 }

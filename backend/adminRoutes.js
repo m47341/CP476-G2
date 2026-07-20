@@ -1,6 +1,7 @@
 // everything librarians/admins can see/do
 const express = require("express");
 const db = require("./database");
+const bcrypt = require("bcryptjs");
 const router = express.Router();
 
 router.get("/main-page", getAdminMainPage);
@@ -32,22 +33,40 @@ async function createNewPatron(req, res) {
   // takes new registration details from admin form and inserts them into database
 
   // Extract string
-  const patronName = req.body.Patron_Name;
-  const patronEmail = req.body.Patron_Email;
-  const patronPassword = req.body.Patron_Password;
+  const patronName = (req.body.Patron_Name || "").trim();
+  const patronEmail = (req.body.Patron_Email || "").trim();
+  const patronPassword = req.body.Patron_Password || "";
+
+  // validation
+  if (!patronName || !patronEmail || !patronPassword) {
+    return res.status(400).json({
+      success: false,
+      error: "Name, email, and password are required",
+    });
+  }
+
+  function isValidEmail(email) {
+    return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
+  }
+
+  if (!isValidEmail(patronEmail)) {
+    return res
+      .status(400)
+      .json({ success: false, error: "Invalid email format" });
+  }
 
   try {
+    const hashed = await bcrypt.hash(patronPassword, 10);
     // Create new patron and insert it into USERS
     await db.dbPromise.query(
       "INSERT INTO USERS (Name, Email, Password, Role) VALUES (?, ?, ?, 'Patron')",
-      [patronName, patronEmail, patronPassword],
+      [patronName, patronEmail, hashed],
     );
     res.json({ success: true, message: "Patron created successfully." });
   } catch (error) {
     console.error("Patron creation error: ", error);
     res.status(500).json({ success: false, error: "Internal server error" });
   }
-  
 }
 
 async function updatePatronInfo(req, res) {
@@ -78,10 +97,37 @@ async function updatePatronInfo(req, res) {
 
     const extractedUserId = userRows[0].ID;
 
+    // determine password to set
+    // hash new password if given, otherwise keep existing
+    let passwordToStore = userRows[0].Password;
+    if (newPatronPassword && newPatronPassword.length > 0) {
+      passwordToStore = await bcrypt.hash(newPatronPassword, 10);
+    }
+
+    // email validation (if given)
+    function isValidEmail(email) {
+      return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
+    }
+
+    if (newPatronEmail && !isValidEmail(newPatronEmail)) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Invalid email format" });
+    }
+
+    const finalName =
+      newPatronName && newPatronName.trim().length > 0
+        ? newPatronName
+        : userRows[0].Name;
+    const finalEmail =
+      newPatronEmail && newPatronEmail.trim().length > 0
+        ? newPatronEmail
+        : userRows[0].Email;
+
     // Update patron
     await db.dbPromise.query(
       "UPDATE USERS SET Name = ?, Email = ?, Password = ? WHERE ID = ?",
-      [newPatronName, newPatronEmail, newPatronPassword, extractedUserId],
+      [finalName, finalEmail, passwordToStore, extractedUserId],
     );
 
     res.json({ success: true, message: "Patron updated successfully." });
@@ -89,7 +135,6 @@ async function updatePatronInfo(req, res) {
     console.error("Patron update error: ", error);
     res.status(500).json({ success: false, error: "Internal server error" });
   }
-
 }
 
 async function addNewBook(req, res) {
@@ -113,15 +158,14 @@ async function addNewBook(req, res) {
 
     // If author does not exist, add it to database
     if (authorRows.length == 0) {
-      await db.dbPromise.query(
-        "INSERT INTO AUTHORS (Name) VALUES (?)",
-        [authorName],
-      );
+      await db.dbPromise.query("INSERT INTO AUTHORS (Name) VALUES (?)", [
+        authorName,
+      ]);
       const [authorRows] = await db.dbPromise.query(
         "SELECT * FROM AUTHORS WHERE Name = ?",
         [authorName],
       );
-    } 
+    }
 
     const extractedAuthorID = authorRows[0].ID;
 
@@ -129,7 +173,7 @@ async function addNewBook(req, res) {
     await db.dbPromise.query(
       "INSERT INTO BOOKS (Title, Author_ID, ISBN, Total_Quantity, Available_Quantity) VALUES (?, ?, ?, ?, ?)",
       [bookTitle, extractedAuthorID, isbn, totalQuantity, availableQuantity],
-    )
+    );
 
     res.json({ success: true, message: "Book added successfully." });
   } catch (error) {

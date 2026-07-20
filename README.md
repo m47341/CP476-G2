@@ -10,13 +10,14 @@ A full stack library management system. For finding and getting books, handling 
 
 ```bash
 npm init -y
-npm install express cors body-parser mysql2
+npm install express cors body-parser mysql2 bcryptjs
 ```
 
 - `express`: Core framework that handles network routing, allowing server to accept API requests (eg, fetching books or logging in) and send back responses.
 - `cors`: Security tool that lets frontend talk to backend (even if running on different local ports).
 - `body-parser`: Piece of middleware that extracts data out of HTTP request bodies and translates it into JSON objects.
 - `mysql2`: Database driver that allows js code to execute SQL queries directly against MySQL server.
+- `bcryptjs`: javascript lib used to hash passwords.
 
 ## Running
 
@@ -55,38 +56,55 @@ node backend/server.js
 #### Authentication Route Verification (`authRoutes.js`)
 
 ```bash
-curl -X POST http://localhost:3060/auth/patron-sign-in -H "Content-Type: application/json" -d '{"patron_email": "jeb@email.com", "patron_password": "pass123"}' # pass
-curl -X POST http://localhost:3060/auth/admin-sign-in -H "Content-Type: application/json" -d '{"admin_email": "john@mail.com", "admin_password": "admin123"}' # pass
-curl -X POST http://localhost:3060/auth/admin-sign-in -H "Content-Type: application/json" -d '{"admin_email": "john@mail.com", "admin_password": "pass123"}' # fail, wrong password
+# patron login, success (password matches hash in seed)
+curl -X POST http://localhost:3060/auth/patron-sign-in -H "Content-Type: application/json" -d '{"patron_email": "jeb@email.com", "patron_password": "pass123"}'
+
+# admin login, success (password matches hash in seed)
+curl -X POST http://localhost:3060/auth/admin-sign-in -H "Content-Type: application/json" -d '{"admin_email": "john@mail.com", "admin_password": "admin123"}'
+
+# admin login, failure (incorrect password)
+curl -X POST http://localhost:3060/auth/admin-sign-in -H "Content-Type: application/json" -d '{"admin_email": "john@mail.com", "admin_password": "wrongpassword"}'
+
+# input validation, failure (incorrect email regex)
+curl -X POST http://localhost:3060/auth/patron-sign-in -H "Content-Type: application/json" -d '{"patron_email": "bademailformat", "patron_password": "pass123"}'
+
+# input validation, failure (missing expected values)
+curl -X POST http://localhost:3060/auth/patron-sign-in -H "Content-Type: application/json" -d '{"patron_email": "", "patron_password": ""}'
 ```
 
-#### Patron Feature Verification (`patronRoutes.js`)
+#### Admin Creation & User Management Verification (`adminRoutes.js`)
 
 ```bash
-curl -X POST http://localhost:3060/patron/landing-page
-curl -X POST http://localhost:3060/patron/patron-main-page
-curl -X POST http://localhost:3060/patron/patron-book-search -H "Content-Type: application/json" -d '{"Title": "1984", "Author_Name": "George Orwell"}' # pass, shows 1984
-curl -X POST http://localhost:3060/patron/put-book-on-hold -H "Content-Type: application/json" -d '{"User_ID": 2, "Book_ID": 1}' # pass
-curl -X POST http://localhost:3060/patron/patron-book-search -H "Content-Type: application/json" -d '{"Title": "1985", "Author_Name": "George Orwell"}' # fail, should show nothing
+# create new patron, success (hashes password and accepts valid email structural formatting)
+curl -X GET http://localhost:3060/admin/create-new-patron -H "Content-Type: application/json" -d '{"Patron_Name": "Bob Tester", "Patron_Email": "bob@email.com", "Patron_Password": "pass312"}'
 
+# create new patron, failure (missing input)
+curl -X GET http://localhost:3060/admin/create-new-patron -H "Content-Type: application/json" -d '{"Patron_Name": "", "Patron_Email": "invalidatdomain", "Patron_Password": ""}'
+
+# update existing patron, success (modifies email structure safely while preserving existing password states)
+curl -X GET http://localhost:3060/admin/update-patron -H "Content-Type: application/json" -d '{"Patron_Name": "Sarah Reader", "New_Patron_Name": "Sarah New", "New_Patron_Email": "new_sarah@email.com"}'
+
+# update existing patron, success (hashes and replaces a password string with a fresh bcrypt variant)
+curl -X GET http://localhost:3060/admin/update-patron -H "Content-Type: application/json" -d '{"Patron_Name": "Jebediah Smith", "New_Patron_Password": "password789"}'
 ```
 
-#### Admin Inventory Management Verification (`adminRoutes.js`)
+#### Standards verification
 
 ```bash
 curl http://localhost:3060/admin/main-page
+curl -X POST http://localhost:3060/patron/landing-page
+curl -X POST http://localhost:3060/patron/patron-main-page
 
-curl http://localhost:3060/admin/create-new-patron
-curl http://localhost:3060/admin/update-patron
-curl http://localhost:3060/admin/add-new-book
-
-curl -X POST http://localhost:3060/admin/search -H "Content-Type: application/json" -d '{"Title": "Frankenstein", "Author_Name": "Mary Shelley"}'
-
-curl -X POST http://localhost:3060/admin/check-out -H "Content-Type: application/json" -d '{"Patron_Name": "Jebediah Smith", "Book_ID": 1}'
-
-curl -X POST http://localhost:3060/admin/check-in -H "Content-Type: application/json" -d '{"Patron_Name": "Jebediah Smith", "Book_ID": 1}'
-
+# inventory management endpoints
+curl -X GET http://localhost:3060/admin/add-new-book -H "Content-Type: application/json" -d '{"Book_Title": "1984", "Author_Name": "George Orwell", "ISBN": "9780451524935", "Total_Quantity": 2, "Avaliable_Quantity": 2}' # faliure, already there
+curl -X POST http://localhost:3060/admin/search -H "Content-Type: application/json" -d '{"Title": "1984", "Author_Name": "George Orwell"}'
+curl -X POST http://localhost:3060/admin/check-out -H "Content-Type: application/json" -d '{"Patron_Name": "Jebediah Smith", "Book_ID": 5}'
+curl -X POST http://localhost:3060/admin/check-in -H "Content-Type: application/json" -d '{"Patron_Name": "Jebediah Smith", "Book_ID": 5}'
 curl http://localhost:3060/admin/overdue-book-list
+
+# catalog search and holds
+curl -X POST http://localhost:3060/patron/patron-book-search -H "Content-Type: application/json" -d '{"Title": "1984", "Author_Name": "George Orwell"}'
+curl -X POST http://localhost:3060/patron/put-book-on-hold -H "Content-Type: application/json" -d '{"User_ID": 3, "Book_ID": 1}'
 ```
 
 ## Contributions (For Milestone 2)
@@ -133,7 +151,6 @@ curl http://localhost:3060/admin/overdue-book-list
 - Designed and implemented the low-fidelity Admin Sign-In frontend interface.
 - Developed the low-fidelity Admin Book Search frontend, including the search layout and user interface.
 - Created the low-fidelity Add Book frontend interface, including the form layout for adding new books.
-
 
 ## Members
 
