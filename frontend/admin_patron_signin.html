@@ -1,273 +1,330 @@
-<!DOCTYPE html>
-<!--
-******************************************************************************
+/******************************************************************************
  * Name: Nicholas Perez
  * Course: CP476B - Internet Computing
  * Milestone: Milestone 02 - Front-End Implementation
- * File: index.html
- * Date: June, 20 2026
+ * File: styles.css
+ * Date: June 20, 2026
  *
  * Description:
- * Front-end implementation of the Library Management System.
- * This interface supports:
- * - Admin Sign In
- * - Book Search / Catalog
- * - Add Book
- *
- * The interface was developed based on the approved Milestone 01
- * wireframes and uses HTML, CSS, and JavaScript for functionality.
-******************************************************************************
--->
+ * Stylesheet for the Library Management System front-end.
+ * This file controls:
+ * - General page layout
+ * - Navigation menu styling
+ * - Forms and buttons
+ * - Catalog and book cards
+ * - Success modal
+ * - Responsive design for smaller screens
+ ******************************************************************************/
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+/* Apply border-box sizing to all elements */
+* {
+    box-sizing: border-box;
+}
 
-    <!-- Ensure proper scaling on mobile devices -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+/* General page styling */
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f4f4;
+    color: #222;
+}
 
-    <title>Library Admin System</title>
+/* Standard button styling */
+button {
+    cursor: pointer;
+    border: 1px solid #333;
+    background: #ffffff;
+    padding: 0.65rem 1rem;
+    font-size: 0.95rem;
+}
 
-    <!-- External stylesheet -->
-    <link rel="stylesheet" href="admin_patron_signin.css">
-</head>
+/* Button hover effect */
+button:hover {
+    background: #eeeeee;
+}
 
-<body>
-    <!-- Main application container -->
-    <main class="app-shell">
+/* Standard input field styling */
+input {
+    width: 100%;
+    padding: 0.55rem;
+    border: 1px solid #777;
+    font-size: 0.95rem;
+}
 
-        <!-- Landing page shown when application first loads -->
-        <section id="landingPage" class="screen active-screen centered-screen">
-            <div class="choice-card">
+/* Form label styling */
+label {
+    font-size: 0.9rem;
+    margin-top: 0.75rem;
+}
 
-                <h1>Library System</h1>
+/* Main application container */
+.app-shell {
+    min-height: 100vh;
+}
 
-                <!-- Patron login button (not implemented yet) -->
-                <button class="secondary-button" type="button">
-                    Library Patron Sign-in
-                </button>
+/* Hide screens by default */
+.screen {
+    display: none;
+}
 
-                <!-- Navigate to admin login screen -->
-                <button id="showAdminLoginBtn" type="button">
-                    Admin Sign-in
-                </button>
+/* Show active screen */
+.active-screen {
+    display: flex;
+}
 
-            </div>
-        </section>
+/* Center content vertically and horizontally */
+.centered-screen {
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+}
 
-        <!-- Admin login page -->
-        <section id="adminLoginPage" class="screen centered-screen">
+/* Shared styling for landing and form cards */
+.choice-card,
+.form-card {
+    width: 360px;
+    padding: 2rem;
+    background: #ffffff;
+    border: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
 
-            <form id="adminLoginForm" class="form-card">
+/* Center headings within cards */
+.choice-card h1,
+.form-card h2 {
+    text-align: center;
+    margin-top: 0;
+}
 
-                <h2>Admin Login</h2>
+/* Secondary button appearance */
+.secondary-button {
+    background: #f8f8f8;
+}
 
-                <label for="adminUsername">Username:</label>
-                <input
-                    id="adminUsername"
-                    name="adminUsername"
-                    type="text"
-                    required
-                >
+/* Dashboard layout */
+.dashboard-screen.active-screen {
+    display: grid;
+    grid-template-columns: 230px 1fr;
+    min-height: 100vh;
+}
 
-                <label for="adminPassword">Password:</label>
-                <input
-                    id="adminPassword"
-                    name="adminPassword"
-                    type="password"
-                    required
-                >
+/* Sidebar navigation panel */
+.sidebar {
+    background: #ffffff;
+    border-right: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
 
-                <!-- Submit login form -->
-                <button type="submit">Sign In</button>
+/* Sidebar title */
+.sidebar h2 {
+    padding: 1rem;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+}
 
-                <!-- Return to landing page -->
-                <button
-                    id="backToLandingBtn"
-                    class="secondary-button"
-                    type="button"
-                >
-                    Back
-                </button>
+/* Navigation button styling */
+.nav-button {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid #dddddd;
+    text-align: left;
+    padding: 1rem;
+}
 
-            </form>
-        </section>
+/* Highlight currently selected navigation item */
+.active-nav {
+    background: #dbeafe;
+}
 
-        <!-- Main admin dashboard -->
-        <section id="adminAppPage" class="screen dashboard-screen">
+/* Disabled navigation options */
+.disabled-nav {
+    color: #777;
+}
 
-            <!-- Sidebar navigation menu -->
-            <aside class="sidebar">
+/* Admin information area at bottom of sidebar */
+.admin-tag {
+    margin-top: auto;
+    padding: 1rem;
+    border-top: 1px solid #333;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+}
 
-                <h2>Menu</h2>
+/* Circular admin icon */
+.admin-circle {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #333;
+    border-radius: 50%;
+    display: inline-block;
+}
 
-                <nav>
+/* Main content area */
+.content-panel {
+    padding: 2rem;
+}
 
-                    <!-- Catalog view -->
-                    <button
-                        id="catalogNavBtn"
-                        class="nav-button active-nav"
-                        type="button"
-                    >
-                        Catalog
-                    </button>
+/* Hide content views by default */
+.content-view {
+    display: none;
+}
 
-                    <!-- Future features -->
-                    <button class="nav-button disabled-nav" type="button">
-                        Check-in
-                    </button>
+/* Show active content view */
+.active-view {
+    display: block;
+}
 
-                    <button class="nav-button disabled-nav" type="button">
-                        Check-out
-                    </button>
+/* Header section for content pages */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
 
-                    <!-- Add Book view -->
-                    <button
-                        id="addBookNavBtn"
-                        class="nav-button"
-                        type="button"
-                    >
-                        Add Book
-                    </button>
+/* Search form container */
+.search-box {
+    background: #ffffff;
+    border: 1px solid #333;
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr auto auto;
+    gap: 0.75rem;
+    align-items: end;
+    margin-bottom: 1rem;
+}
 
-                </nav>
+/* Hide labels because placeholders are used */
+.search-box label {
+    display: none;
+}
 
-                <!-- Admin identifier -->
-                <div class="admin-tag">
-                    <span class="admin-circle"></span>
-                    <span>Admin_xxxxxxxx</span>
-                </div>
+/* Container for search results */
+.book-results {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
 
-            </aside>
+/* Individual book result card */
+.book-card {
+    background: #ffffff;
+    border: 1px solid #333;
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+}
 
-            <!-- Main content area -->
-            <section class="content-panel">
+/* Book title styling */
+.book-card h3 {
+    margin: 0 0 0.25rem 0;
+}
 
-                <!-- Catalog / Search screen -->
-                <section
-                    id="catalogView"
-                    class="content-view active-view"
-                >
+/* Book details spacing */
+.book-card p {
+    margin: 0.2rem 0;
+}
 
-                    <div class="page-header">
-                        <h1>Catalog</h1>
+/* Placeholder image for book cover */
+.cover-placeholder {
+    width: 75px;
+    height: 90px;
+    border: 1px solid #333;
+    background: repeating-linear-gradient(
+        -45deg,
+        #ffffff,
+        #ffffff 8px,
+        #eeeeee 8px,
+        #eeeeee 16px
+    );
+}
 
-                        <!-- Shortcut to Add Book page -->
-                        <button id="openAddBookBtn" type="button">
-                            Add Book
-                        </button>
-                    </div>
+/* Larger form used for adding books */
+.inline-form-card {
+    width: 420px;
+}
 
-                    <!-- Search form -->
-                    <form id="bookSearchForm" class="search-box">
+/* Feedback message shown under Check In/Out and Patron forms */
+.form-feedback {
+    font-size: 0.85rem;
+    min-height: 1.2rem;
+    margin-top: 0.25rem;
+    color: #b00020;
+}
 
-                        <label for="searchTitle">Title</label>
-                        <input
-                            id="searchTitle"
-                            type="text"
-                            placeholder="Search by title"
-                        >
+.form-feedback.ok {
+    color: #1f7a3f;
+}
 
-                        <label for="searchAuthor">Author</label>
-                        <input
-                            id="searchAuthor"
-                            type="text"
-                            placeholder="Search by author"
-                        >
+/* Modal overlay */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-                        <button type="submit">Search</button>
+/* Hidden state for modal */
+.hidden {
+    display: none;
+}
 
-                        <!-- Clear search fields -->
-                        <button
-                            id="clearSearchBtn"
-                            class="secondary-button"
-                            type="button"
-                        >
-                            Clear
-                        </button>
+/* Modal content box */
+.modal-box {
+    position: relative;
+    width: 260px;
+    padding: 2rem;
+    background: #ffffff;
+    border: 1px solid #333;
+    text-align: center;
+}
 
-                    </form>
+/* Modal close button */
+.modal-close {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    border: 0;
+    font-size: 1.2rem;
+    padding: 0.2rem 0.5rem;
+}
 
-                    <!-- Search results populated by JavaScript -->
-                    <div id="bookResults" class="book-results"></div>
+/* Responsive layout for tablets and mobile devices */
+@media (max-width: 700px) {
 
-                </section>
+    /* Stack sidebar above content */
+    .dashboard-screen.active-screen {
+        grid-template-columns: 1fr;
+    }
 
-                <!-- Add Book screen -->
-                <section
-                    id="addBookView"
-                    class="content-view"
-                >
+    /* Adjust sidebar appearance */
+    .sidebar {
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid #333;
+    }
 
-                    <h1>Add Book</h1>
+    /* Stack search controls vertically */
+    .search-box {
+        grid-template-columns: 1fr;
+    }
 
-                    <form
-                        id="addBookForm"
-                        class="form-card inline-form-card"
-                    >
-
-                        <label for="bookCode">Book Code:</label>
-                        <input
-                            id="bookCode"
-                            type="text"
-                            required
-                        >
-
-                        <label for="newTitle">Title:</label>
-                        <input
-                            id="newTitle"
-                            type="text"
-                            required
-                        >
-
-                        <label for="newAuthor">Author:</label>
-                        <input
-                            id="newAuthor"
-                            type="text"
-                            required
-                        >
-
-                        <!-- Submit new book -->
-                        <button type="submit">Submit</button>
-
-                        <!-- Return to catalog screen -->
-                        <button
-                            id="returnToCatalogBtn"
-                            class="secondary-button"
-                            type="button"
-                        >
-                            Return
-                        </button>
-
-                    </form>
-
-                </section>
-
-            </section>
-
-        </section>
-
-    </main>
-
-    <!-- Success confirmation modal -->
-    <div id="successModal" class="modal hidden">
-
-        <div class="modal-box">
-
-            <!-- Close modal -->
-            <button
-                id="closeModalBtn"
-                class="modal-close"
-                type="button"
-            >
-                ×
-            </button>
-
-            <p>Save Successful</p>
-
-        </div>
-
-    </div>
+    /* Allow forms to resize on smaller screens */
+    .inline-form-card,
+    .choice-card,
+    .form-card {
+        width: 90vw;
+    }
+}
 
     <!-- JavaScript functionality -->
     <script src="admin_patron_signin.js"></script>
