@@ -16,6 +16,10 @@
         <aside class="sidebar">
           <div class="sidebar-top">
             <div class="menu-title">Admin</div>
+            <div class="menu-item link-item" id="dashboardLink">Dashboard</div>
+            <div class="menu-item link-item" id="catalogLink">Catalog</div>
+            <div class="menu-item link-item" id="checkInLink">Check In</div>
+            <div class="menu-item link-item" id="checkOutLink">Check Out</div>
             <div class="menu-item link-item" id="newPatronLink">New Patron</div>
             <div class="menu-item link-item active" id="updatePatronLink">Update Patron</div>
           </div>
@@ -92,6 +96,18 @@
     document.getElementById('adminLabel').textContent = adminName;
 
     // ── Nav ──────────────────────────────────────────────────
+    document.getElementById('dashboardLink').addEventListener('click', () => {
+      window.location.href = 'admin.html';
+    });
+    document.getElementById('catalogLink').addEventListener('click', () => {
+      window.location.href = 'catalog.html';
+    });
+    document.getElementById('checkInLink').addEventListener('click', () => {
+      window.location.href = 'check-in.html';
+    });
+    document.getElementById('checkOutLink').addEventListener('click', () => {
+      window.location.href = 'check-out.html';
+    });
     document.getElementById('newPatronLink').addEventListener('click', () => {
       window.location.href = 'new-patron.html';
     });
