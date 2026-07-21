@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!--
+ ******************************************************************************
+ * Name: Nicholas Perez
+ * Course: CP476B - Internet Computing
+ * File: add-book.html
+ * Date: July 21, 2026
+ *
+ * Description:
+ * Dedicated administrator form for adding books to the library catalog.
+ ******************************************************************************
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Book</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="admin-styles.css" />
+</head>
+<body class="menu-open">
+  <div class="page">
+    <div class="screen">
+      <section class="menu-view">
+        <aside class="sidebar">
+          <div class="sidebar-top">
+            <div class="menu-title">Admin</div>
+            <div class="menu-item link-item" id="dashboardLink">Dashboard</div>
+            <div class="menu-item link-item" id="catalogLink">Catalog</div>
+            <div class="menu-item link-item active" id="addBookLink">Add Book</div>
+            <div class="menu-item link-item" id="checkInLink">Check In</div>
+            <div class="menu-item link-item" id="checkOutLink">Check Out</div>
+            <div class="menu-item link-item" id="newPatronLink">New Patron</div>
+            <div class="menu-item link-item" id="updatePatronLink">Update Patron</div>
+          </div>
+
+          <div class="sidebar-bottom">
+            <div class="radio"></div>
+            <div id="adminLabel">Admin</div>
+          </div>
+        </aside>
+
+        <main class="content">
+          <div class="content-inner">
+            <h1 class="content-title">Add Book</h1>
+
+            <form id="addBookForm" class="admin-form" novalidate>
+              <div class="form-section-label">Book information</div>
+
+              <div class="form-row">
+                <label for="titleInput">Title:</label>
+                <input id="titleInput" name="bookTitle" type="text" maxlength="255" required />
+              </div>
+
+              <div class="form-row">
+                <label for="authorInput">Author:</label>
+                <input id="authorInput" name="authorName" type="text" maxlength="255" required />
+              </div>
+
+              <div class="form-row">
+                <label for="isbnInput">ISBN:</label>
+                <input
+                  id="isbnInput"
+                  name="isbn"
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="13"
+                  pattern="[0-9]{10}|[0-9]{13}"
+                  required
+                />
+              </div>
+
+              <div class="form-row">
+                <label for="quantityInput">Quantity:</label>
+                <input id="quantityInput" name="totalQuantity" type="number" min="1" step="1" value="1" required />
+              </div>
+
+              <div class="btn-row">
+                <button id="clearBtn" class="btn" type="button">Clear</button>
+                <button id="submitBtn" class="btn btn-primary" type="submit">Add Book</button>
+              </div>
+
+              <div id="feedback" class="feedback dim" aria-live="polite"></div>
+            </form>
+          </div>
+        </main>
+
+        <div class="bottom-center-btn" id="signOutBtn" title="Sign out" style="cursor:pointer;"></div>
+      </section>
+    </div>
+  </div>
+
+  <script src="add-book.js"></script>
+</body>
+</html>

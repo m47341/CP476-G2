@@ -1,315 +1,48 @@
 /******************************************************************************
  * Name: Nicholas Perez
  * Course: CP476B - Internet Computing
- * Milestone: Milestone 02 - Front-End Implementation
- * File: styles.css
- * Date: June 20, 2026
+ * File: admin_patron_signin.css
+ * Date: July 21, 2026
  *
  * Description:
- * Stylesheet for the Library Management System front-end.
- * This file controls:
- * - General page layout
- * - Navigation menu styling
- * - Forms and buttons
- * - Catalog and book cards
- * - Success modal
- * - Responsive design for smaller screens
+ * Admin-login-specific styles. Shared layout, typography, fields, and page
+ * styling come from styles.css to avoid duplicating project-wide rules.
  ******************************************************************************/
 
-/* Apply border-box sizing to all elements */
-* {
-    box-sizing: border-box;
+/* styles.css uses spans in login fields; this page uses semantic labels. */
+.field label {
+  min-width: 74px;
 }
 
-/* General page styling */
-body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f4f4f4;
-    color: #222;
+.login-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 22px;
 }
 
-/* Standard button styling */
-button {
-    cursor: pointer;
-    border: 1px solid #333;
-    background: #ffffff;
-    padding: 0.65rem 1rem;
-    font-size: 0.95rem;
+.login-actions button {
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 5px 18px;
+  border: 1px solid #777;
+  background: #fff;
+  cursor: pointer;
+  color: var(--text);
 }
 
-/* Button hover effect */
-button:hover {
-    background: #eeeeee;
+.login-actions button:hover {
+  background: #f0f0f0;
 }
 
-/* Standard input field styling */
-input {
-    width: 100%;
-    padding: 0.55rem;
-    border: 1px solid #777;
-    font-size: 0.95rem;
+.login-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-/* Form label styling */
-label {
-    font-size: 0.9rem;
-    margin-top: 0.75rem;
-}
-
-/* Main application container */
-.app-shell {
-    min-height: 100vh;
-}
-
-/* Hide screens by default */
-.screen {
-    display: none;
-}
-
-/* Show active screen */
-.active-screen {
-    display: flex;
-}
-
-/* Center content vertically and horizontally */
-.centered-screen {
-    min-height: 100vh;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Shared styling for landing and form cards */
-.choice-card,
-.form-card {
-    width: 360px;
-    padding: 2rem;
-    background: #ffffff;
-    border: 1px solid #333;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-/* Center headings within cards */
-.choice-card h1,
-.form-card h2 {
-    text-align: center;
-    margin-top: 0;
-}
-
-/* Secondary button appearance */
-.secondary-button {
-    background: #f8f8f8;
-}
-
-/* Dashboard layout */
-.dashboard-screen.active-screen {
-    display: grid;
-    grid-template-columns: 230px 1fr;
-    min-height: 100vh;
-}
-
-/* Sidebar navigation panel */
-.sidebar {
-    background: #ffffff;
-    border-right: 1px solid #333;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-/* Sidebar title */
-.sidebar h2 {
-    padding: 1rem;
-    margin: 0;
-    border-bottom: 1px solid #ccc;
-}
-
-/* Navigation button styling */
-.nav-button {
-    width: 100%;
-    border: 0;
-    border-bottom: 1px solid #dddddd;
-    text-align: left;
-    padding: 1rem;
-}
-
-/* Highlight currently selected navigation item */
-.active-nav {
-    background: #dbeafe;
-}
-
-/* Disabled navigation options */
-.disabled-nav {
-    color: #777;
-}
-
-/* Admin information area at bottom of sidebar */
-.admin-tag {
-    margin-top: auto;
-    padding: 1rem;
-    border-top: 1px solid #333;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-size: 0.85rem;
-}
-
-/* Circular admin icon */
-.admin-circle {
-    width: 28px;
-    height: 28px;
-    border: 1px solid #333;
-    border-radius: 50%;
-    display: inline-block;
-}
-
-/* Main content area */
-.content-panel {
-    padding: 2rem;
-}
-
-/* Hide content views by default */
-.content-view {
-    display: none;
-}
-
-/* Show active content view */
-.active-view {
-    display: block;
-}
-
-/* Header section for content pages */
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-/* Search form container */
-.search-box {
-    background: #ffffff;
-    border: 1px solid #333;
-    padding: 1rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr auto auto;
-    gap: 0.75rem;
-    align-items: end;
-    margin-bottom: 1rem;
-}
-
-/* Hide labels because placeholders are used */
-.search-box label {
-    display: none;
-}
-
-/* Container for search results */
-.book-results {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-/* Individual book result card */
-.book-card {
-    background: #ffffff;
-    border: 1px solid #333;
-    padding: 1rem;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 1rem;
-}
-
-/* Book title styling */
-.book-card h3 {
-    margin: 0 0 0.25rem 0;
-}
-
-/* Book details spacing */
-.book-card p {
-    margin: 0.2rem 0;
-}
-
-/* Placeholder image for book cover */
-.cover-placeholder {
-    width: 75px;
-    height: 90px;
-    border: 1px solid #333;
-    background: repeating-linear-gradient(
-        -45deg,
-        #ffffff,
-        #ffffff 8px,
-        #eeeeee 8px,
-        #eeeeee 16px
-    );
-}
-
-/* Larger form used for adding books */
-.inline-form-card {
-    width: 420px;
-}
-
-/* Modal overlay */
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Hidden state for modal */
-.hidden {
-    display: none;
-}
-
-/* Modal content box */
-.modal-box {
-    position: relative;
-    width: 260px;
-    padding: 2rem;
-    background: #ffffff;
-    border: 1px solid #333;
-    text-align: center;
-}
-
-/* Modal close button */
-.modal-close {
-    position: absolute;
-    top: 0.25rem;
-    right: 0.25rem;
-    border: 0;
-    font-size: 1.2rem;
-    padding: 0.2rem 0.5rem;
-}
-
-/* Responsive layout for tablets and mobile devices */
-@media (max-width: 700px) {
-
-    /* Stack sidebar above content */
-    .dashboard-screen.active-screen {
-        grid-template-columns: 1fr;
-    }
-
-    /* Adjust sidebar appearance */
-    .sidebar {
-        min-height: auto;
-        border-right: 0;
-        border-bottom: 1px solid #333;
-    }
-
-    /* Stack search controls vertically */
-    .search-box {
-        grid-template-columns: 1fr;
-    }
-
-    /* Allow forms to resize on smaller screens */
-    .inline-form-card,
-    .choice-card,
-    .form-card {
-        width: 90vw;
-    }
+.error-msg {
+  margin-top: 10px;
+  min-height: 16px;
+  font-size: 12px;
+  color: #b00;
 }
