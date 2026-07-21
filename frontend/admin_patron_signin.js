@@ -150,8 +150,8 @@ document.getElementById('adminLoginForm').addEventListener('submit', async funct
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                adminemail: email,
-                adminpassword: password
+                admin_email: email,
+                admin_password: password
             })
         });
 
