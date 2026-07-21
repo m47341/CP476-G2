@@ -251,6 +251,18 @@ label {
     width: 420px;
 }
 
+/* Feedback message shown under Check In/Out and Patron forms */
+.form-feedback {
+    font-size: 0.85rem;
+    min-height: 1.2rem;
+    margin-top: 0.25rem;
+    color: #b00020;
+}
+
+.form-feedback.ok {
+    color: #1f7a3f;
+}
+
 /* Modal overlay */
 .modal {
     position: fixed;
@@ -261,6 +273,58 @@ label {
     justify-content: center;
 }
 
+/* Hidden state for modal */
+.hidden {
+    display: none;
+}
+
+/* Modal content box */
+.modal-box {
+    position: relative;
+    width: 260px;
+    padding: 2rem;
+    background: #ffffff;
+    border: 1px solid #333;
+    text-align: center;
+}
+
+/* Modal close button */
+.modal-close {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    border: 0;
+    font-size: 1.2rem;
+    padding: 0.2rem 0.5rem;
+}
+
+/* Responsive layout for tablets and mobile devices */
+@media (max-width: 700px) {
+
+    /* Stack sidebar above content */
+    .dashboard-screen.active-screen {
+        grid-template-columns: 1fr;
+    }
+
+    /* Adjust sidebar appearance */
+    .sidebar {
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid #333;
+    }
+
+    /* Stack search controls vertically */
+    .search-box {
+        grid-template-columns: 1fr;
+    }
+
+    /* Allow forms to resize on smaller screens */
+    .inline-form-card,
+    .choice-card,
+    .form-card {
+        width: 90vw;
+    }
+}
 /* Hidden state for modal */
 .hidden {
     display: none;
