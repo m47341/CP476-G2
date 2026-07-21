@@ -215,3 +215,8 @@ document.getElementById('closeModalBtn').addEventListener('click', function() {
 
 // Load initial mock book list
 renderBooks(books);
+    }
+});
+
+// Load initial mock book list
+renderBooks(books);

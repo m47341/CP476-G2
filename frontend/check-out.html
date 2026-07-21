@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>New Patron</title>
+  <title>Check Out</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="admin-styles.css" />
 </head>
@@ -19,8 +19,8 @@
             <div class="menu-item link-item" id="dashboardLink">Dashboard</div>
             <div class="menu-item link-item" id="catalogLink">Catalog</div>
             <div class="menu-item link-item" id="checkInLink">Check In</div>
-            <div class="menu-item link-item" id="checkOutLink">Check Out</div>
-            <div class="menu-item link-item active" id="newPatronLink">New Patron</div>
+            <div class="menu-item link-item active" id="checkOutLink">Check Out</div>
+            <div class="menu-item link-item" id="newPatronLink">New Patron</div>
             <div class="menu-item link-item" id="updatePatronLink">Update Patron</div>
           </div>
           <div class="sidebar-bottom">
@@ -32,34 +32,24 @@
         <!-- Main content -->
         <main class="content">
           <div class="content-inner">
-            <div class="content-title">New Patron</div>
+            <div class="content-title">Check Out</div>
 
             <div class="admin-form">
-              <div class="form-section-label">Patron Details</div>
+              <div class="form-section-label">Lend Book</div>
 
               <div class="form-row">
-                <label for="patronName">Name</label>
-                <input id="patronName" type="text" autocomplete="off" placeholder="Full name" />
+                <label for="patronName">Patron Name</label>
+                <input id="patronName" type="text" autocomplete="off" placeholder="Full name on record" />
               </div>
 
               <div class="form-row">
-                <label for="patronEmail">Email</label>
-                <input id="patronEmail" type="email" autocomplete="off" placeholder="email@example.com" />
-              </div>
-
-              <div class="form-row">
-                <label for="patronPassword">Password</label>
-                <input id="patronPassword" type="password" autocomplete="off" placeholder="Temporary password" />
-              </div>
-
-              <div class="form-row">
-                <label for="patronPasswordConfirm">Confirm</label>
-                <input id="patronPasswordConfirm" type="password" autocomplete="off" placeholder="Re-enter password" />
+                <label for="bookId">Book Code</label>
+                <input id="bookId" type="text" autocomplete="off" placeholder="Book ID" />
               </div>
 
               <div class="btn-row">
                 <button class="btn" id="clearBtn" type="button">Clear</button>
-                <button class="btn btn-primary" id="submitBtn" type="button">Create Patron</button>
+                <button class="btn btn-primary" id="submitBtn" type="button">Check Out</button>
               </div>
 
               <div class="feedback" id="feedback" aria-live="polite"></div>
@@ -93,8 +83,8 @@
     document.getElementById('checkInLink').addEventListener('click', () => {
       window.location.href = 'check-in.html';
     });
-    document.getElementById('checkOutLink').addEventListener('click', () => {
-      window.location.href = 'check-out.html';
+    document.getElementById('newPatronLink').addEventListener('click', () => {
+      window.location.href = 'new-patron.html';
     });
     document.getElementById('updatePatronLink').addEventListener('click', () => {
       window.location.href = 'update-patron.html';
@@ -107,14 +97,12 @@
       window.location.href = 'AdminSigninMenu.html';
     });
 
-    // ── Form logic ───────────────────────────────────────────
-    const nameInput     = document.getElementById('patronName');
-    const emailInput    = document.getElementById('patronEmail');
-    const pwInput       = document.getElementById('patronPassword');
-    const pwConfInput   = document.getElementById('patronPasswordConfirm');
-    const submitBtn     = document.getElementById('submitBtn');
-    const clearBtn      = document.getElementById('clearBtn');
-    const feedback      = document.getElementById('feedback');
+    // ── Form elements ────────────────────────────────────────
+    const patronInput = document.getElementById('patronName');
+    const bookInput    = document.getElementById('bookId');
+    const submitBtn    = document.getElementById('submitBtn');
+    const clearBtn     = document.getElementById('clearBtn');
+    const feedback     = document.getElementById('feedback');
 
     function setFeedback(msg, type) {
       feedback.textContent = msg;
@@ -122,73 +110,55 @@
     }
 
     function clearForm() {
-      nameInput.value   = '';
-      emailInput.value  = '';
-      pwInput.value     = '';
-      pwConfInput.value = '';
+      patronInput.value = '';
+      bookInput.value    = '';
       setFeedback('', 'dim');
-      nameInput.focus();
+      patronInput.focus();
     }
 
     clearBtn.addEventListener('click', clearForm);
 
-    async function submitNewPatron() {
+    async function submitCheckOut() {
       setFeedback('', '');
 
-      const name     = nameInput.value.trim();
-      const email    = emailInput.value.trim();
-      const password = pwInput.value;
-      const confirm  = pwConfInput.value;
+      const patron = patronInput.value.trim();
+      const bookId = bookInput.value.trim();
 
-      // Client-side validation
-      if (!name || !email || !password || !confirm) {
-        setFeedback('All fields are required.'); return;
-      }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        setFeedback('Please enter a valid email address.'); return;
-      }
-      if (password !== confirm) {
-        setFeedback('Passwords do not match.'); return;
-      }
-      if (password.length < 6) {
-        setFeedback('Password must be at least 6 characters.'); return;
+      if (!patron || !bookId) {
+        setFeedback('Patron name and book code are both required.');
+        return;
       }
 
       submitBtn.disabled    = true;
-      submitBtn.textContent = 'Creating…';
+      submitBtn.textContent = 'Saving…';
 
       try {
-        const res = await fetch('http://localhost:3060/admin/create-new-patron', {
-          method:  'GET',
+        const res = await fetch('http://localhost:3060/admin/check-out', {
+          method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({
-            Patron_Name:     name,
-            Patron_Email:    email,
-            Patron_Password: password
-          })
+          body:    JSON.stringify({ Patron_Name: patron, Book_ID: bookId })
         });
 
         const data = await res.json();
 
         if (res.ok && data.success) {
-          setFeedback(`Patron "${name}" created successfully.`, 'ok');
+          setFeedback(data.message || 'Book checked out successfully.', 'ok');
           clearForm();
         } else {
-          setFeedback(data.error || 'Failed to create patron. Please try again.');
+          setFeedback(data.error || 'Check-out failed. Please verify the patron and book code.');
         }
       } catch (err) {
         setFeedback('Unable to reach server. Please try again.');
       } finally {
         submitBtn.disabled    = false;
-        submitBtn.textContent = 'Create Patron';
+        submitBtn.textContent = 'Check Out';
       }
     }
 
-    submitBtn.addEventListener('click', submitNewPatron);
+    submitBtn.addEventListener('click', submitCheckOut);
 
-    // Allow Enter key to submit from any field
-    [nameInput, emailInput, pwInput, pwConfInput].forEach(el => {
-      el.addEventListener('keydown', e => { if (e.key === 'Enter') submitNewPatron(); });
+    [patronInput, bookInput].forEach(el => {
+      el.addEventListener('keydown', e => { if (e.key === 'Enter') submitCheckOut(); });
     });
   </script>
 </body>

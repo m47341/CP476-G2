@@ -1,86 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Admin</title>
-        <link rel="stylesheet" href="adminStyles.css"/>
-        <script src="admin.js"></script>
-    </head>
-    <body>
-        <div class="page">
-            <div class="screen">
-                <section id="menuView" class="menu-view">
-                    <aside class="sidebar">
-                        <div class="menu-title" onclick="menuClick()">Menu</div>
-                        <!-- openMenu messes up sidebar-bottom css -->
-                        <div id="openMenu">
-                            <div class="sidebar-top">
-                                <div class="menu-item link-item" id="catalogLink" onclick="changePage(this)">Catalog</div>
-                                <div class="menu-item link-item" id="checkInLink" onclick="changePage(this)">Check-in</div>
-                                <div class="menu-item link-item" id="checkOutLink" onclick="changePage(this)">Check-out</div>
-                                <div class="menu-item link-item" id="newPatronLink" onclick="changePage(this)">New Patron</div>
-                                <div class="menu-item link-item" id="updatePatronLink" onclick="changePage(this)">Update Patron</div>
-                            </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="admin-styles.css" />
+  <style>
+    /* ── Dashboard quick-links grid ──────────────────────── */
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+      max-width: 720px;
+    }
 
-                            <div class="sidebar-bottom">
-                                <div id="adminLabel">Admin_XXXXXX</div>
-                            </div>
-                        </div>
-                    </aside>
+    .quick-link-card {
+      border: 1px solid #ccc;
+      padding: 18px 16px;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text);
+      background: #fff;
+    }
 
-                    <main class="content">
-                        <div id="checkInForm" hidden>
-                            <form method="post">
-                                <fieldset>
-                                    <legend>Check in</legend>
-                                    <p>
-                                        <label>Book Code: </label>
-                                        <input type="text" name="cInBookCode" autocapitalize="off" autocomplete="off" autocorrect="off"/>
-                                    </p>
-                                    <p>
-                                        <label>Patron: </label>
-                                        <input type="text" name="cInPatron" autocapitalize="off" autocomplete="off" autocorrect="off"/>
-                                    </p>
-                                    <button onclick="checkInSubmit(event)">Save</button>
-                                    <input type="reset"/>
-                                </fieldset>
-                            </form>
-                        </div>
+    .quick-link-card:hover {
+      background: #f0f0f0;
+    }
 
-                        <div id="onCheckInSubmit" hidden>
-                            <p id="bookCode"></p>
-                            <p>Available for check out.</p>
-                            <p id="patron"></p>
-                            <p>Able to borrow book.</p>
-                        </div>
-                        
-                        <div id="checkOutForm" hidden>
-                            <form method="post">
-                                <fieldset>
-                                    <legend>Check out</legend>
-                                    <p>
-                                        <label>Book Code: </label>
-                                        <input type="text" name="cOutBookCode" autocapitalize="off" autocomplete="off" autocorrect="off"/>
-                                    </p>
-                                    <p>
-                                        <label>Patron: </label>
-                                        <input type="text" name="cOutPatron" autocapitalize="off" autocomplete="off" autocorrect="off"/>
-                                    </p>
-                                    <button onclick="checkOutSubmit(event)">Save</button>
-                                    <input type="reset"/>
-                                </fieldset>
-                            </form>
+    .quick-link-card .qlc-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
 
-                            <div id="onCheckOutSubmit" hidden>
-                                <p id="bookCode"></p>
-                                <p id="patron"></p>
-                                <p>Ready to return.</p>
-                            </div>
-                        </div>
-                    </main>
-                </section>   
+    .quick-link-card .qlc-desc {
+      color: #777;
+    }
+  </style>
+</head>
+<body class="menu-open">
+  <div class="page">
+    <div class="screen">
+      <section class="menu-view">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="sidebar-top">
+            <div class="menu-title">Admin</div>
+            <div class="menu-item link-item active" id="dashboardLink">Dashboard</div>
+            <div class="menu-item link-item" id="catalogLink">Catalog</div>
+            <div class="menu-item link-item" id="checkInLink">Check In</div>
+            <div class="menu-item link-item" id="checkOutLink">Check Out</div>
+            <div class="menu-item link-item" id="newPatronLink">New Patron</div>
+            <div class="menu-item link-item" id="updatePatronLink">Update Patron</div>
+          </div>
+          <div class="sidebar-bottom">
+            <div class="radio"></div>
+            <div id="adminLabel">Admin</div>
+          </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="content">
+          <div class="content-inner">
+            <div class="content-title">Admin Dashboard</div>
+
+            <div class="quick-links">
+              <div class="quick-link-card" id="qlCatalog">
+                <div class="qlc-title">Catalog</div>
+                <div class="qlc-desc">Search and browse the book collection.</div>
+              </div>
+              <div class="quick-link-card" id="qlCheckIn">
+                <div class="qlc-title">Check In</div>
+                <div class="qlc-desc">Process a returned book.</div>
+              </div>
+              <div class="quick-link-card" id="qlCheckOut">
+                <div class="qlc-title">Check Out</div>
+                <div class="qlc-desc">Lend a book to a patron.</div>
+              </div>
+              <div class="quick-link-card" id="qlNewPatron">
+                <div class="qlc-title">New Patron</div>
+                <div class="qlc-desc">Register a new library member.</div>
+              </div>
+              <div class="quick-link-card" id="qlUpdatePatron">
+                <div class="qlc-title">Update Patron</div>
+                <div class="qlc-desc">Edit an existing member's details.</div>
+              </div>
             </div>
-        </div>
-    </body>
+
+            <div class="feedback" id="feedback" aria-live="polite"></div>
+          </div>
+        </main>
+
+        <div class="bottom-center-btn" id="signOutBtn" title="Sign out" style="cursor:pointer;"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // ── Auth guard (admin only) ──────────────────────────────
+    (function guard() {
+      if (sessionStorage.getItem('adminAuth') !== 'true') {
+        window.location.replace('AdminSigninMenu.html');
+      }
+    })();
+
+    const adminName = sessionStorage.getItem('adminName') || 'Admin';
+    document.getElementById('adminLabel').textContent = adminName;
+
+    // ── Nav ──────────────────────────────────────────────────
+    document.getElementById('catalogLink').addEventListener('click', () => {
+      window.location.href = 'catalog.html';
+    });
+    document.getElementById('checkInLink').addEventListener('click', () => {
+      window.location.href = 'check-in.html';
+    });
+    document.getElementById('checkOutLink').addEventListener('click', () => {
+      window.location.href = 'check-out.html';
+    });
+    document.getElementById('newPatronLink').addEventListener('click', () => {
+      window.location.href = 'new-patron.html';
+    });
+    document.getElementById('updatePatronLink').addEventListener('click', () => {
+      window.location.href = 'update-patron.html';
+    });
+
+    // Quick-link cards mirror the sidebar destinations
+    document.getElementById('qlCatalog').addEventListener('click', () => window.location.href = 'catalog.html');
+    document.getElementById('qlCheckIn').addEventListener('click', () => window.location.href = 'check-in.html');
+    document.getElementById('qlCheckOut').addEventListener('click', () => window.location.href = 'check-out.html');
+    document.getElementById('qlNewPatron').addEventListener('click', () => window.location.href = 'new-patron.html');
+    document.getElementById('qlUpdatePatron').addEventListener('click', () => window.location.href = 'update-patron.html');
+
+    // ── Sign out ─────────────────────────────────────────────
+    document.getElementById('signOutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('adminAuth');
+      sessionStorage.removeItem('adminName');
+      window.location.href = 'AdminSigninMenu.html';
+    });
+
+    // ── Optional: ping the dashboard endpoint on load ────────
+    (async function loadDashboard() {
+      try {
+        await fetch('http://localhost:3060/admin/main-page');
+      } catch (err) {
+        // silent — dashboard still renders fine without this
+      }
+    })();
+  </script>
+</body>
 </html>
