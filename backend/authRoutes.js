@@ -2,7 +2,14 @@
 const express = require("express");
 const db = require("./database");
 const bcrypt = require("bcryptjs");
+const { normalizeInput } = require("./utils");
 const router = express.Router();
+
+const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+function isValidEmail(email) {
+  return EMAIL_REGEX.test(email);
+}
 
 router.post("/patron-sign-in", patronSignIn);
 router.post("/admin-sign-in", adminSignIn);
@@ -13,18 +20,14 @@ async function patronSignIn(req, res) {
   // gets email and password from frontend form and checks if matches a record in database
 
   // Extract email and password
-  const patronEmail = (req.body.patron_email || "").trim();
-  const patronPassword = req.body.patron_password || "";
+  const patronEmail = normalizeInput(req.body && req.body.patron_email);
+  const patronPassword = normalizeInput(req.body && req.body.patron_password);
 
   // validation
   if (!patronEmail || !patronPassword) {
     return res
       .status(400)
       .json({ success: false, error: "Email and password are required" });
-  }
-
-  function isValidEmail(email) {
-    return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
   }
 
   if (!isValidEmail(patronEmail)) {
@@ -40,7 +43,7 @@ async function patronSignIn(req, res) {
       [patronEmail],
     );
 
-    if (userRows.length == 0) {
+    if (userRows.length === 0) {
       return res
         .status(401)
         .json({ success: false, error: "Invalid email or password." });
@@ -73,17 +76,13 @@ async function adminSignIn(req, res) {
   // checks login details against database and confirms if user role is actually an admin
 
   // extract email and password
-  const adminEmail = (req.body.admin_email || "").trim();
-  const adminPassword = req.body.admin_password || "";
+  const adminEmail = normalizeInput(req.body && req.body.admin_email);
+  const adminPassword = normalizeInput(req.body && req.body.admin_password);
 
   if (!adminEmail || !adminPassword) {
     return res
       .status(400)
       .json({ success: false, error: "Email and password are required" });
-  }
-
-  function isValidEmail(email) {
-    return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
   }
 
   if (!isValidEmail(adminEmail)) {
@@ -99,7 +98,7 @@ async function adminSignIn(req, res) {
       [adminEmail],
     );
 
-    if (userRows.length == 0) {
+    if (userRows.length === 0) {
       return res
         .status(401)
         .json({ success: false, error: "Invalid email or password." });
