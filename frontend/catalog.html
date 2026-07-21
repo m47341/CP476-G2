@@ -4,319 +4,393 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Catalog</title>
-  <link rel="stylesheet" href="styles.css" />
   <style>
-    /* ── page-specific additions ─────────────────────────── */
-    .content-inner {
-      padding: 24px 28px;
-      height: 100%;
-      overflow-y: auto;
-      position: absolute;
-      inset: 0;
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #222;
     }
 
-    .content-title {
+    .page {
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 220px;
+      background: #1f2937;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px 0;
+    }
+
+    .sidebar-top {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .menu-title {
+      font-size: 20px;
+      font-weight: bold;
+      padding: 0 20px 12px 20px;
+    }
+
+    .menu-item {
+      padding: 12px 20px;
+      cursor: pointer;
+    }
+
+    .menu-item:hover,
+    .menu-item.active {
+      background: #374151;
+    }
+
+    .sidebar-bottom {
+      padding: 0 20px;
       font-size: 14px;
-      font-weight: 700;
-      margin: 0 0 18px 0;
+      color: #d1d5db;
     }
 
-    /* search form */
-    .search-form {
+    .content {
+      flex: 1;
+      padding: 28px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-top: 6px;
+    }
+
+    .btn {
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn-dark {
+      background: #1f2937;
+      color: white;
+    }
+
+    .btn-dark:hover {
+      background: #111827;
+    }
+
+    .search-box {
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 22px;
+    }
+
+    .search-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto auto;
+      gap: 12px;
+    }
+
+    .search-grid input {
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .feedback {
+      margin-top: 12px;
+      min-height: 20px;
+      font-size: 14px;
+      color: #b91c1c;
+    }
+
+    .results {
+      display: grid;
+      gap: 16px;
+    }
+
+    .book-card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .book-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .book-meta {
+      font-size: 14px;
+      color: #555;
+      margin: 4px 0;
+    }
+
+    .book-actions {
+      margin-top: 14px;
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 20px;
     }
 
-    .search-form input {
-      flex: 1;
-      min-width: 140px;
-      border: none;
-      border-bottom: 1px solid #999;
-      outline: none;
-      font-size: 12px;
-      font-family: Arial, Helvetica, sans-serif;
-      padding: 2px 2px 3px 2px;
-      background: transparent;
-      color: var(--text);
+    .btn-hold {
+      background: #2563eb;
+      color: white;
     }
 
-    .search-form button {
-      font-size: 12px;
-      font-family: Arial, Helvetica, sans-serif;
-      padding: 4px 16px;
-      border: 1px solid #777;
-      background: #fff;
-      cursor: pointer;
-      color: var(--text);
-      white-space: nowrap;
+    .btn-hold:hover {
+      background: #1d4ed8;
     }
 
-    .search-form button:hover  { background: #f0f0f0; }
-    .search-form button:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    /* results table */
-    .results-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
+    .btn-disabled {
+      background: #9ca3af;
+      color: white;
+      cursor: not-allowed;
     }
 
-    .results-table th {
-      text-align: left;
-      font-weight: 700;
-      border-bottom: 1px solid var(--border);
-      padding: 5px 8px 5px 0;
+    @media (max-width: 900px) {
+      .search-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        width: 180px;
+      }
     }
 
-    .results-table td {
-      padding: 7px 8px 7px 0;
-      border-bottom: 1px solid #e8e8e8;
-      vertical-align: middle;
-    }
+    @media (max-width: 700px) {
+      .page {
+        flex-direction: column;
+      }
 
-    .results-table tr:last-child td { border-bottom: none; }
-
-    .hold-btn {
-      font-size: 11px;
-      font-family: Arial, Helvetica, sans-serif;
-      padding: 3px 10px;
-      border: 1px solid #999;
-      background: #fff;
-      cursor: pointer;
-      color: var(--text);
-    }
-
-    .hold-btn:hover    { background: #f0f0f0; }
-    .hold-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .status-badge {
-      display: inline-block;
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 3px;
-    }
-
-    .status-available  { background: #e6f4ea; color: #2d6a3f; }
-    .status-unavailable { background: #fce8e8; color: #9b2626; }
-
-    /* feedback messages */
-    .feedback {
-      font-size: 12px;
-      margin-bottom: 14px;
-      min-height: 16px;
-      color: #b00;
-    }
-    .feedback.ok { color: #2d6a3f; }
-
-    .empty-state {
-      font-size: 12px;
-      color: #888;
-      padding: 12px 0;
-    }
-
-    /* active sidebar link */
-    .link-item.active {
-      font-weight: 700;
-      text-decoration: underline;
+      .sidebar {
+        width: 100%;
+      }
     }
   </style>
 </head>
-<body class="menu-open">
+<body>
   <div class="page">
-    <div class="screen">
-      <section class="menu-view">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="menu-title">Menu</div>
+        <div class="menu-item active" id="catalogLink">Catalog</div>
+        <div class="menu-item" id="loansLink">Current Loans</div>
+        <div class="menu-item" id="dashboardLink">Dashboard</div>
+      </div>
 
-        <!-- Sidebar -->
-        <aside class="sidebar">
-          <div class="sidebar-top">
-            <div class="menu-title">Menu</div>
-            <div class="menu-item link-item active" id="catalogLink">Catalog</div>
-            <div class="menu-item link-item" id="loansLink">Current Loans</div>
-          </div>
-          <div class="sidebar-bottom">
-            <div class="radio"></div>
-            <div id="patronLabel">Patron</div>
-          </div>
-        </aside>
+      <div class="sidebar-bottom">
+        <div id="patronLabel">Patron</div>
+      </div>
+    </aside>
 
-        <!-- Main content -->
-        <main class="content">
-          <div class="content-inner">
-            <div class="content-title">Catalog</div>
+    <main class="content">
+      <div class="topbar">
+        <div>
+          <h1 class="title">Library Catalog</h1>
+          <div class="subtitle" id="welcomeMsg">Search available books and place holds.</div>
+        </div>
 
-            <div class="search-form">
-              <input id="titleInput"  type="text" placeholder="Title"  autocomplete="off" />
-              <input id="authorInput" type="text" placeholder="Author" autocomplete="off" />
-              <button id="searchBtn" type="button">Search</button>
-            </div>
+        <button class="btn btn-dark" id="signOutBtn">Sign Out</button>
+      </div>
 
-            <div class="feedback" id="feedback" aria-live="polite"></div>
-
-            <div id="resultsWrap"></div>
-          </div>
-        </main>
-
-        <div class="bottom-center-btn" id="signOutBtn" title="Sign out" style="cursor:pointer;"></div>
+      <section class="search-box">
+        <div class="search-grid">
+          <input type="text" id="titleInput" placeholder="Search by title" />
+          <input type="text" id="authorInput" placeholder="Search by author" />
+          <button class="btn btn-dark" id="searchBtn">Search</button>
+          <button class="btn" id="clearBtn">Clear</button>
+        </div>
+        <div class="feedback" id="feedback"></div>
       </section>
-    </div>
+
+      <section class="results" id="results"></section>
+    </main>
   </div>
 
   <script>
-    // ── Auth guard ───────────────────────────────────────────
-    (function guard() {
-      if (sessionStorage.getItem('patronAuth') !== 'true') {
-        window.location.replace('PatronSigninMenu.html');
-      }
-    })();
-
-    const patronName = sessionStorage.getItem('patronName') || 'Patron';
-    document.getElementById('patronLabel').textContent = patronName;
-
-    // ── Nav ──────────────────────────────────────────────────
-    document.getElementById('loansLink').addEventListener('click', () => {
-      window.location.href = 'current-loans.html';
-    });
-    // catalogLink is the current page — no nav needed
-
-    // ── Sign out ─────────────────────────────────────────────
-    document.getElementById('signOutBtn').addEventListener('click', () => {
-      sessionStorage.removeItem('patronAuth');
-      sessionStorage.removeItem('patronName');
-      window.location.href = 'PatronSigninMenu.html';
-    });
-
-    // ── Search ───────────────────────────────────────────────
-    const titleInput  = document.getElementById('titleInput');
-    const authorInput = document.getElementById('authorInput');
-    const searchBtn   = document.getElementById('searchBtn');
-    const feedback    = document.getElementById('feedback');
-    const resultsWrap = document.getElementById('resultsWrap');
-
-    async function runSearch() {
-      const title  = titleInput.value.trim();
-      const author = authorInput.value.trim();
-
-      feedback.textContent = '';
-      feedback.className   = 'feedback';
-      resultsWrap.innerHTML = '';
-
-      if (!title && !author) {
-        feedback.textContent = 'Enter a title or author to search.';
-        return;
-      }
-
-      searchBtn.disabled    = true;
-      searchBtn.textContent = 'Searching…';
-
-      try {
-        const res = await fetch('http://localhost:3060/patron/patron-book-search', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ Title: title, Author_Name: author })
-        });
-
-        const data = await res.json();
-
-        if (!res.ok || !data.success) {
-          feedback.textContent = data.error || 'No results found.';
-        } else {
-          renderResults(data.books);
-        }
-      } catch (err) {
-        feedback.textContent = 'Unable to reach server. Please try again.';
-      } finally {
-        searchBtn.disabled    = false;
-        searchBtn.textContent = 'Search';
+    function guard() {
+      const auth = sessionStorage.getItem("patronAuth");
+      if (auth !== "true") {
+        window.location.replace("PatronSigninMenu.html");
       }
     }
+    guard();
 
-    function renderResults(books) {
-      if (!books || books.length === 0) {
-        resultsWrap.innerHTML = '<div class="empty-state">No books found matching your search.</div>';
-        return;
+    const name = sessionStorage.getItem("patronName") || "Patron";
+    document.getElementById("patronLabel").textContent = name;
+    document.getElementById("welcomeMsg").textContent =
+      `Logged in as ${name}. Search available books and place holds.`;
+
+    const sampleBooks = [
+      {
+        id: 1,
+        title: "Harry Potter and the Sorcerer's Stone",
+        author: "J. K. Rowling",
+        isbn: "9780590353427",
+        available: 2
+      },
+      {
+        id: 2,
+        title: "To Kill a Mockingbird",
+        author: "Harper Lee",
+        isbn: "9780060935467",
+        available: 0
+      },
+      {
+        id: 3,
+        title: "The Great Gatsby",
+        author: "F. Scott Fitzgerald",
+        isbn: "9780743273565",
+        available: 2
+      },
+      {
+        id: 4,
+        title: "The Hobbit",
+        author: "J. R. R. Tolkien",
+        isbn: "9780547928227",
+        available: 4
+      },
+      {
+        id: 5,
+        title: "1984",
+        author: "George Orwell",
+        isbn: "9780451524935",
+        available: 2
       }
+    ];
 
-      const table = document.createElement('table');
-      table.className = 'results-table';
-      table.innerHTML = `
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Status</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      `;
+    const resultsEl = document.getElementById("results");
+    const feedbackEl = document.getElementById("feedback");
+    const titleInput = document.getElementById("titleInput");
+    const authorInput = document.getElementById("authorInput");
 
-      const tbody = table.querySelector('tbody');
+    function setFeedback(msg, isError = true) {
+      feedbackEl.textContent = msg;
+      feedbackEl.style.color = isError ? "#b91c1c" : "#166534";
+    }
 
-      books.forEach(book => {
-        const available = book.Copies_Available > 0;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${escHtml(book.Title)}</td>
-          <td>${escHtml(book.Author_Name || '—')}</td>
-          <td>
-            <span class="status-badge ${available ? 'status-available' : 'status-unavailable'}">
-              ${available ? 'Available' : 'Checked Out'}
-            </span>
-          </td>
-          <td>
-            ${!available
-              ? `<button class="hold-btn" data-id="${book.ID}">Put on Hold</button>`
-              : ''}
-          </td>
+    function renderBooks(books) {
+      resultsEl.innerHTML = "";
+
+      if (!books.length) {
+        resultsEl.innerHTML = `
+          <div class="book-card">
+            <div class="book-title">No books found</div>
+            <div class="book-meta">Try a different title or author search.</div>
+          </div>
         `;
-        tbody.appendChild(tr);
-      });
-
-      table.querySelectorAll('.hold-btn').forEach(btn => {
-        btn.addEventListener('click', () => placeHold(btn));
-      });
-
-      resultsWrap.appendChild(table);
-    }
-
-    async function placeHold(btn) {
-      const bookId = btn.dataset.id;
-      btn.disabled    = true;
-      btn.textContent = '…';
-
-      try {
-        const res = await fetch('http://localhost:3060/patron/put-book-on-hold', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ User_ID: sessionStorage.getItem('patronId') || '', Book_ID: bookId })
-        });
-
-        const data = await res.json();
-
-        feedback.textContent = data.message || data.error || 'Hold request sent.';
-        feedback.className   = 'feedback' + (data.success ? ' ok' : '');
-        btn.textContent = data.success ? 'Hold placed' : 'Try again';
-        if (!data.success) btn.disabled = false;
-      } catch (err) {
-        feedback.textContent = 'Unable to reach server.';
-        btn.textContent = 'Try again';
-        btn.disabled    = false;
+        return;
       }
+
+      books.forEach((book) => {
+        const card = document.createElement("div");
+        card.className = "book-card";
+
+        const availabilityText =
+          book.available > 0
+            ? `${book.available} available`
+            : "Currently unavailable";
+
+        const buttonHtml =
+          book.available > 0
+            ? `<button class="btn btn-disabled" disabled>Available Now</button>`
+            : `<button class="btn btn-hold" data-book-id="${book.id}" data-book-title="${book.title}">Place Hold</button>`;
+
+        card.innerHTML = `
+          <div class="book-title">${book.title}</div>
+          <div class="book-meta"><strong>Author:</strong> ${book.author}</div>
+          <div class="book-meta"><strong>ISBN:</strong> ${book.isbn}</div>
+          <div class="book-meta"><strong>Status:</strong> ${availabilityText}</div>
+          <div class="book-actions">
+            ${buttonHtml}
+          </div>
+        `;
+
+        resultsEl.appendChild(card);
+      });
+
+      document.querySelectorAll(".btn-hold").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const title = btn.getAttribute("data-book-title");
+          setFeedback(`Hold placed for "${title}" (demo mode).`, false);
+        });
+      });
     }
 
-    function escHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+    function runSearch() {
+      const titleQuery = titleInput.value.trim().toLowerCase();
+      const authorQuery = authorInput.value.trim().toLowerCase();
+
+      const filtered = sampleBooks.filter((book) => {
+        const titleMatch = !titleQuery || book.title.toLowerCase().includes(titleQuery);
+        const authorMatch = !authorQuery || book.author.toLowerCase().includes(authorQuery);
+        return titleMatch && authorMatch;
+      });
+
+      setFeedback("");
+      renderBooks(filtered);
     }
 
-    searchBtn.addEventListener('click', runSearch);
-    [titleInput, authorInput].forEach(el => {
-      el.addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
+    document.getElementById("searchBtn").addEventListener("click", runSearch);
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      titleInput.value = "";
+      authorInput.value = "";
+      setFeedback("");
+      renderBooks(sampleBooks);
     });
+
+    document.getElementById("catalogLink").addEventListener("click", () => {
+      window.location.href = "catalog.html";
+    });
+
+    document.getElementById("loansLink").addEventListener("click", () => {
+      window.location.href = "current-loans.html";
+    });
+
+    document.getElementById("dashboardLink").addEventListener("click", () => {
+      window.location.href = "patron-dashboard.html";
+    });
+
+    document.getElementById("signOutBtn").addEventListener("click", () => {
+      sessionStorage.removeItem("patronAuth");
+      sessionStorage.removeItem("patronName");
+      window.location.href = "PatronSigninMenu.html";
+    });
+
+    titleInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") runSearch();
+    });
+
+    authorInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") runSearch();
+    });
+
+    renderBooks(sampleBooks);
   </script>
 </body>
 </html>
