@@ -443,17 +443,9 @@ async function addNewBook(req, res) {
   const bookTitle = normalizeInput(req.body && req.body.Book_Title);
   const authorName = normalizeInput(req.body && req.body.Author_Name);
   const isbn = normalizeInput(req.body && req.body.ISBN);
-  const totalQuantity = parsePositiveInteger(
-    req.body && req.body.Total_Quantity,
-  );
-  const providedAvailableQuantity =
-    req.body &&
-    (req.body.Avaliable_Quantity ?? req.body.Available_Quantity) !== undefined
-      ? parsePositiveInteger(
-          req.body.Avaliable_Quantity ?? req.body.Available_Quantity,
-        )
-      : null;
-
+  const totalQuantity = req.body.Total_Quantity;
+  const providedAvailableQuantity = req.body.Available_Quantity;
+  
   if (!bookTitle || !authorName || !isbn || totalQuantity === null) {
     return res.status(400).json({
       success: false,
