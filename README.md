@@ -27,13 +27,30 @@ npm install express cors body-parser mysql2 bcryptjs
 
 #### start and verify the db daemon
 
-make sure mysql is installed
+make sure mysql is installed separately
+
+_Windows:_
+(cmd as admin)
+
+```cmd
+net start MySQL80
+```
+
+_Linux:_
 
 ```bash
 sudo systemctl start mysql && sudo systemctl status mysql
 ```
 
 #### seed db schema and mock data
+
+_Windows:_
+
+```cmd
+mysql -u root -p < database\init.sql
+```
+
+_Linux:_
 
 ```bash
 mysql -u root -p < database/init.sql
@@ -43,15 +60,27 @@ Password: `pass123`
 
 #### start backend server
 
+_Windows:_
+
+```cmd
+node backend\server.js
+```
+
+_Linux:_
+
 ```bash
 node backend/server.js
 ```
+
+### Frontend
+
+After backend is running, open `LandingPage.html` in a web browser
 
 ## Testing
 
 ### Backend
 
-(make sure backend is running after `node backend/server.js`)
+(make sure backend is running)
 
 #### Authentication Route Verification (`authRoutes.js`)
 
