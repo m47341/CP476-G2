@@ -57,10 +57,10 @@ CREATE TABLE HOLDS (
 -- passwords here are hashed
 -- calculated with: node -e "const b = require('bcryptjs'); console.log(b.hashSync('PASSWORD', 10));"
 INSERT INTO USERS (Name, Email, Password, Role) VALUES 
-('Jonathan Medly', 'john@mail.com', '$2a$10$qXo/A85oeoqsYn7kDOQBOOaDGsnHL3TrBRKOBS6w.cr5COTLM6oK6', 'Admin'),
-('Alice Boss', 'alice@mail.com', '$2a$10$ii2gYdHfPGb.n0dxEjNIseumtH6xJs9CfDGp0bb7.jHZuHU6eEzKO', 'Admin'),
-('Jebediah Smith', 'jeb@email.com', '$2a$10$uAnbx/TpBwOqZwP4xHOELOHX40Wq3tlqDzoH4bDykxUX.rHkbFwB6', 'Patron'),
-('Sarah Reader', 'sarah@email.com', '$2a$10$b71Z48eP4iV4KWQD7HQ0cuZ90Oc5Vx.XNV8lDt0SIh4eXRGQa/mim', 'Patron');
+('Jonathan Medly', 'john@mail.com', '$2a$10$qXo/A85oeoqsYn7kDOQBOOaDGsnHL3TrBRKOBS6w.cr5COTLM6oK6', 'Admin'), -- pass: admin123
+('Alice Boss', 'alice@mail.com', '$2a$10$ii2gYdHfPGb.n0dxEjNIseumtH6xJs9CfDGp0bb7.jHZuHU6eEzKO', 'Admin'), -- pass: admin456
+('Jebediah Smith', 'jeb@email.com', '$2a$10$uAnbx/TpBwOqZwP4xHOELOHX40Wq3tlqDzoH4bDykxUX.rHkbFwB6', 'Patron'), -- pass: pass123
+('Sarah Reader', 'sarah@email.com', '$2a$10$b71Z48eP4iV4KWQD7HQ0cuZ90Oc5Vx.XNV8lDt0SIh4eXRGQa/mim', 'Patron'); -- pass: pass456
 
 INSERT INTO AUTHORS (Name) VALUES 
 ('J. K. Rowling'),
