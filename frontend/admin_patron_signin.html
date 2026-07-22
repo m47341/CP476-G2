@@ -1,200 +1,66 @@
-
- <!DOCTYPE html>
+<!DOCTYPE html>
+<!--
+ ******************************************************************************
+ * Name: Nicholas Perez
+ * Course: CP476B - Internet Computing
+ * File: admin_patron_signin.html
+ * Date: July 21, 2026
+ *
+ * Description:
+ * Administrator sign-in page for the Library Management System.
+ ******************************************************************************
+-->
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Library Admin System</title>
-    <link rel="stylesheet" href="admin_patron_signin.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login</title>
+
+  <!-- Reuse the shared project styles, then apply only login-specific rules. -->
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="admin_patron_signin.css" />
 </head>
 <body>
-    <main class="app-shell">
-        <section id="landingPage" class="screen active-screen centered-screen">
-            <div class="choice-card">
-                <h1>Library System</h1>
+  <div class="page">
+    <div class="screen">
+      <section class="login-view">
+        <h1 class="title">Admin Login</h1>
 
-                <button id="showPatronLoginBtn" class="secondary-button" type="button">
-                    Library Patron Sign-in
-                </button>
+        <form id="adminLoginForm" class="login-box" novalidate>
+          <div class="field">
+            <label for="emailInput">Email:</label>
+            <input
+              id="emailInput"
+              name="adminEmail"
+              type="email"
+              autocomplete="username"
+              placeholder="admin@library.org"
+              required
+            />
+          </div>
 
-                <button id="showAdminLoginBtn" type="button">
-                    Admin Sign-in
-                </button>
-            </div>
-        </section>
+          <div class="field">
+            <label for="passwordInput">Password:</label>
+            <input
+              id="passwordInput"
+              name="adminPassword"
+              type="password"
+              autocomplete="current-password"
+              required
+            />
+          </div>
 
-        <section id="adminLoginPage" class="screen centered-screen">
-            <form id="adminLoginForm" class="form-card">
-                <h2>Admin Login</h2>
+          <div class="login-actions">
+            <button id="backBtn" type="button">Back</button>
+            <button id="loginBtn" type="submit">Sign In</button>
+          </div>
 
-                <label for="adminUsername">Email:</label>
-                <input
-                    id="adminUsername"
-                    name="adminUsername"
-                    type="email"
-                    required
-                >
-
-                <label for="adminPassword">Password:</label>
-                <input
-                    id="adminPassword"
-                    name="adminPassword"
-                    type="password"
-                    required
-                >
-
-                <div id="adminLoginFeedback" class="form-feedback" aria-live="polite"></div>
-
-                <button id="adminLoginSubmitBtn" type="submit">Sign In</button>
-
-                <button
-                    id="backToLandingBtn"
-                    class="secondary-button"
-                    type="button"
-                >
-                    Back
-                </button>
-            </form>
-        </section>
-
-        <section id="adminAppPage" class="screen dashboard-screen">
-            <aside class="sidebar">
-                <h2>Menu</h2>
-
-                <nav>
-                    <button
-                        id="catalogNavBtn"
-                        class="nav-button active-nav"
-                        type="button"
-                    >
-                        Catalog
-                    </button>
-
-                    <button class="nav-button disabled-nav" type="button" disabled>
-                        Check-in
-                    </button>
-
-                    <button class="nav-button disabled-nav" type="button" disabled>
-                        Check-out
-                    </button>
-
-                    <button
-                        id="addBookNavBtn"
-                        class="nav-button"
-                        type="button"
-                    >
-                        Add Book
-                    </button>
-                </nav>
-
-                <div class="admin-tag">
-                    <span class="admin-circle"></span>
-                    <span id="adminTagName">Admin</span>
-                </div>
-            </aside>
-
-            <section class="content-panel">
-                <section
-                    id="catalogView"
-                    class="content-view active-view"
-                >
-                    <div class="page-header">
-                        <h1>Catalog</h1>
-
-                        <button id="openAddBookBtn" type="button">
-                            Add Book
-                        </button>
-                    </div>
-
-                    <form id="bookSearchForm" class="search-box">
-                        <label for="searchTitle">Title</label>
-                        <input
-                            id="searchTitle"
-                            type="text"
-                            placeholder="Search by title"
-                        >
-
-                        <label for="searchAuthor">Author</label>
-                        <input
-                            id="searchAuthor"
-                            type="text"
-                            placeholder="Search by author"
-                        >
-
-                        <button type="submit">Search</button>
-
-                        <button
-                            id="clearSearchBtn"
-                            class="secondary-button"
-                            type="button"
-                        >
-                            Clear
-                        </button>
-                    </form>
-
-                    <div id="bookResults" class="book-results"></div>
-                </section>
-
-                <section
-                    id="addBookView"
-                    class="content-view"
-                >
-                    <h1>Add Book</h1>
-
-                    <form
-                        id="addBookForm"
-                        class="form-card inline-form-card"
-                    >
-                        <label for="bookCode">Book Code:</label>
-                        <input
-                            id="bookCode"
-                            type="text"
-                            required
-                        >
-
-                        <label for="newTitle">Title:</label>
-                        <input
-                            id="newTitle"
-                            type="text"
-                            required
-                        >
-
-                        <label for="newAuthor">Author:</label>
-                        <input
-                            id="newAuthor"
-                            type="text"
-                            required
-                        >
-
-                        <button type="submit">Submit</button>
-
-                        <button
-                            id="returnToCatalogBtn"
-                            class="secondary-button"
-                            type="button"
-                        >
-                            Return
-                        </button>
-                    </form>
-                </section>
-            </section>
-        </section>
-    </main>
-
-    <div id="successModal" class="modal hidden">
-        <div class="modal-box">
-            <button
-                id="closeModalBtn"
-                class="modal-close"
-                type="button"
-            >
-                ×
-            </button>
-
-            <p>Save Successful</p>
-        </div>
+          <div id="errorMsg" class="error-msg" aria-live="polite"></div>
+        </form>
+      </section>
     </div>
+  </div>
 
-    <script src="admin_patron_signin.js"></script>
+  <script src="admin_patron_signin.js"></script>
 </body>
 </html>
