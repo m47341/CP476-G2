@@ -50,6 +50,7 @@
             <div class="menu-title">Admin</div>
             <div class="menu-item link-item active" id="dashboardLink">Dashboard</div>
             <div class="menu-item link-item" id="catalogLink">Catalog</div>
+            <div class="menu-item link-item" id="addBookLink">Add Book</div>
             <div class="menu-item link-item" id="checkInLink">Check In</div>
             <div class="menu-item link-item" id="checkOutLink">Check Out</div>
             <div class="menu-item link-item" id="newPatronLink">New Patron</div>
@@ -70,6 +71,10 @@
               <div class="quick-link-card" id="qlCatalog">
                 <div class="qlc-title">Catalog</div>
                 <div class="qlc-desc">Search and browse the book collection.</div>
+              </div>
+              <div class="quick-link-card" id="qlAddBook">
+                <div class="qlc-title">Add Book</div>
+                <div class="qlc-desc">Add a book to the book collection.</div>
               </div>
               <div class="quick-link-card" id="qlCheckIn">
                 <div class="qlc-title">Check In</div>
@@ -113,6 +118,9 @@
     document.getElementById('catalogLink').addEventListener('click', () => {
       window.location.href = 'catalog.html';
     });
+    document.getElementById('addBookLink').addEventListener('click', () => {
+      window.location.href = 'add-book.html';
+    });
     document.getElementById('checkInLink').addEventListener('click', () => {
       window.location.href = 'check-in.html';
     });
@@ -128,6 +136,7 @@
 
     // Quick-link cards mirror the sidebar destinations
     document.getElementById('qlCatalog').addEventListener('click', () => window.location.href = 'catalog.html');
+    document.getElementById('qlAddBook').addEventListener('click', () => window.location.href = 'add-book.html');
     document.getElementById('qlCheckIn').addEventListener('click', () => window.location.href = 'check-in.html');
     document.getElementById('qlCheckOut').addEventListener('click', () => window.location.href = 'check-out.html');
     document.getElementById('qlNewPatron').addEventListener('click', () => window.location.href = 'new-patron.html');

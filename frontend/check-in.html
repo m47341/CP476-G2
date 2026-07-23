@@ -18,6 +18,7 @@
             <div class="menu-title">Admin</div>
             <div class="menu-item link-item" id="dashboardLink">Dashboard</div>
             <div class="menu-item link-item" id="catalogLink">Catalog</div>
+            <div class="menu-item link-item" id="addBookLink">Add Book</div>
             <div class="menu-item link-item active" id="checkInLink">Check In</div>
             <div class="menu-item link-item" id="checkOutLink">Check Out</div>
             <div class="menu-item link-item" id="newPatronLink">New Patron</div>
@@ -79,6 +80,9 @@
     });
     document.getElementById('catalogLink').addEventListener('click', () => {
       window.location.href = 'catalog.html';
+    });
+    document.getElementById('addBookLink').addEventListener('click', () => {
+      window.location.href = 'add-book.html';
     });
     document.getElementById('checkOutLink').addEventListener('click', () => {
       window.location.href = 'check-out.html';
