@@ -102,11 +102,11 @@
   </div>
 
   <script>
-    /* (function guard() {
+    (function guard() {
       if (sessionStorage.getItem('adminAuth') !== 'true') {
         window.location.replace('admin_patron_signin.html');
       }
-    })(); */
+    })();
 
     const adminName = sessionStorage.getItem('adminName') || 'Admin';
     document.getElementById('adminLabel').textContent = adminName;
