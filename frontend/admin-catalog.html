@@ -149,6 +149,8 @@
       }
     ];
 
+    let dbBooks = [];
+
     const resultsEl = document.getElementById("results");
     const feedbackEl = document.getElementById("feedback");
     const titleInput = document.getElementById("titleInput");
@@ -208,7 +210,7 @@
       });
     }
 
-    function runSearch() {
+    /* function runSearch() {
       const titleQuery = titleInput.value.trim().toLowerCase();
       const authorQuery = authorInput.value.trim().toLowerCase();
 
@@ -220,6 +222,48 @@
 
       setFeedback("");
       renderBooks(filtered);
+    } */
+
+    async function runSearch() {
+        setFeedback('', '');
+
+        const title = titleInput.value.trim();
+        const author = authorInput.value.trim();
+        console.log(title, author);
+
+
+        if (!title && !author) {
+            setFeedback('Title or author is required to search.');
+            return;
+        }
+
+        searchBtn.disabled = true;
+        searchBtn.textContent = 'Searching…';
+
+        try {
+            const res = await fetch('https://localhost:3060/admin/search-books-admin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ Title: title, Author_Name: author})
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                dbBooks = data.books;
+                clearForm();
+            } else {
+                setFeedback(data.error || 'Search failed.');
+            }
+        } catch (err) {
+            setFeedback('Unable to reach server. Please try again.');
+        } finally {
+            searchBtn.disabled = false;
+            searchBtn.textContent = 'Search';
+        }
+
+        setFeedback("");
+        renderBooks(dbBooks);
     }
 
     document.getElementById("searchBtn").addEventListener("click", runSearch);
@@ -228,7 +272,7 @@
       titleInput.value = "";
       authorInput.value = "";
       setFeedback("");
-      renderBooks(sampleBooks);
+      renderBooks(dbBooks);
     });
 
     // ── Nav ──────────────────────────────────────────────────
@@ -265,8 +309,6 @@
     authorInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") runSearch();
     });
-
-    renderBooks(sampleBooks);
   </script>
 </body>
 </html>
