@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catalog</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="admin-styles.css" />
+  <style>
+    /* borrow dashboard quick-links grid css for book result display */
+    .admin-form {
+      padding: 18px;
+      margin-bottom: 22px;
+    }
+
+    .admin-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto auto;
+      gap: 12px;
+    }
+
+    .books {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+      max-width: 720px;
+    }
+
+    .book-card {
+      border: 1px solid #ccc;
+      padding: 18px 16px;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .book-card:hover {
+      background: #f0f0f0;
+    }
+
+    .book-card .book-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .book-card .book-detail {
+      color: #777;
+    }
+
+    .book-card .btn {
+        margin-top: 10px;
+    }
+  </style>
+</head>
+<body class="menu-open">
+  <div class="page">
+    <div class="screen">
+        <section class="menu-view">
+            <aside class="sidebar">
+                <div class="sidebar-top">
+                <div class="menu-title">Admin</div>
+                <div class="menu-item link-item" id="dashboardLink">Dashboard</div>
+                <div class="menu-item link-item active" id="catalogLink">Catalog</div>
+                <div class="menu-item link-item" id="addBookLink">Add Book</div>
+                <div class="menu-item link-item" id="checkInLink">Check In</div>
+                <div class="menu-item link-item" id="checkOutLink">Check Out</div>
+                <div class="menu-item link-item" id="newPatronLink">New Patron</div>
+                <div class="menu-item link-item" id="updatePatronLink">Update Patron</div>
+                </div>
+                <div class="sidebar-bottom">
+                <div class="radio"></div>
+                <div id="adminLabel">Admin</div>
+                </div>
+            </aside>
+
+            <main class="content">
+                <div class="content-inner">
+                    <div class="content-title">Catalog</div>
+                    <div class="admin-form">
+                        <div class="form-section-label">Search available books and place holds.</div>
+                        <div class="form-row">
+                            <input type="text" id="titleInput" placeholder="Search by title" />
+                        </div>
+                        <div class="form-row">
+                            <input type="text" id="authorInput" placeholder="Search by author" />
+                        </div>
+                        <div class="btn-row">
+                            <button class="btn" id="clearBtn">Clear</button>
+                            <button class="btn btn-primary" id="searchBtn">Search</button>
+                        </div>
+                    </div>
+                    <div class="feedback" id="feedback"></div>
+                    
+                    <section class="results books" id="results"></section>
+                </div>
+            </main>
+            <div class="bottom-center-btn" id="signOutBtn" title="Sign out" style="cursor:pointer;"></div>
+        </section> 
+    </div>
+  </div>
+
+  <script>
+    /* (function guard() {
+      if (sessionStorage.getItem('adminAuth') !== 'true') {
+        window.location.replace('admin_patron_signin.html');
+      }
+    })(); */
+
+    const adminName = sessionStorage.getItem('adminName') || 'Admin';
+    document.getElementById('adminLabel').textContent = adminName;
+
+    const sampleBooks = [
+      {
+        id: 1,
+        title: "Harry Potter and the Sorcerer's Stone",
+        author: "J. K. Rowling",
+        isbn: "9780590353427",
+        available: 2
+      },
+      {
+        id: 2,
+        title: "To Kill a Mockingbird",
+        author: "Harper Lee",
+        isbn: "9780060935467",
+        available: 0
+      },
+      {
+        id: 3,
+        title: "The Great Gatsby",
+        author: "F. Scott Fitzgerald",
+        isbn: "9780743273565",
+        available: 2
+      },
+      {
+        id: 4,
+        title: "The Hobbit",
+        author: "J. R. R. Tolkien",
+        isbn: "9780547928227",
+        available: 4
+      },
+      {
+        id: 5,
+        title: "1984",
+        author: "George Orwell",
+        isbn: "9780451524935",
+        available: 2
+      }
+    ];
+
+    const resultsEl = document.getElementById("results");
+    const feedbackEl = document.getElementById("feedback");
+    const titleInput = document.getElementById("titleInput");
+    const authorInput = document.getElementById("authorInput");
+    const searchBtn = document.getElementById("searchBtn");
+
+    function setFeedback(msg, isError = true) {
+      feedbackEl.textContent = msg;
+      feedbackEl.style.color = isError ? "#b91c1c" : "#166534";
+    }
+
+    function renderBooks(books) {
+      resultsEl.innerHTML = "";
+
+      if (!books.length) {
+        resultsEl.innerHTML = `
+          <div class="book-card">
+            <div class="book-title">No books found</div>
+            <div class="book-meta">Try a different title or author search.</div>
+          </div>
+        `;
+        return;
+      }
+
+      books.forEach((book) => {
+        const card = document.createElement("div");
+        card.className = "book-card";
+
+        const availabilityText =
+          book.available > 0
+            ? `${book.available} available`
+            : "Currently unavailable";
+
+        const buttonHtml =
+          book.available > 0
+            ? `<button class="btn btn-disabled" disabled>Available Now</button>`
+            : `<button class="btn btn-hold" data-book-id="${book.id}" data-book-title="${book.title}">Place Hold</button>`;
+
+        card.innerHTML = `
+          <div class="book-title">${book.title}</div>
+          <div class="book-detail"><strong>Author:</strong> ${book.author}</div>
+          <div class="book-detail"><strong>ISBN:</strong> ${book.isbn}</div>
+          <div class="book-detail"><strong>Status:</strong> ${availabilityText}</div>
+          <div class="book-actions">
+            ${buttonHtml}
+          </div>
+        `;
+
+        resultsEl.appendChild(card);
+      });
+
+      document.querySelectorAll(".btn-hold").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const title = btn.getAttribute("data-book-title");
+          setFeedback(`Hold placed for "${title}" (demo mode).`, false);
+        });
+      });
+    }
+
+    function runSearch() {
+      const titleQuery = titleInput.value.trim().toLowerCase();
+      const authorQuery = authorInput.value.trim().toLowerCase();
+
+      const filtered = sampleBooks.filter((book) => {
+        const titleMatch = !titleQuery || book.title.toLowerCase().includes(titleQuery);
+        const authorMatch = !authorQuery || book.author.toLowerCase().includes(authorQuery);
+        return titleMatch && authorMatch;
+      });
+
+      setFeedback("");
+      renderBooks(filtered);
+    }
+
+    document.getElementById("searchBtn").addEventListener("click", runSearch);
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      titleInput.value = "";
+      authorInput.value = "";
+      setFeedback("");
+      renderBooks(sampleBooks);
+    });
+
+    // ── Nav ──────────────────────────────────────────────────
+    document.getElementById('dashboardLink').addEventListener('click', () => {
+      window.location.href = 'admin.html';
+    });
+    document.getElementById('catalogLink').addEventListener('click', () => {
+      window.location.href = 'admin-catalog.html';
+    });
+    document.getElementById('addBookLink').addEventListener('click', () => {
+      window.location.href = 'add-book.html';
+    });
+    document.getElementById('checkOutLink').addEventListener('click', () => {
+      window.location.href = 'check-out.html';
+    });
+    document.getElementById('newPatronLink').addEventListener('click', () => {
+      window.location.href = 'new-patron.html';
+    });
+    document.getElementById('updatePatronLink').addEventListener('click', () => {
+      window.location.href = 'update-patron.html';
+    });
+
+    // ── Sign out ─────────────────────────────────────────────
+    document.getElementById('signOutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('adminAuth');
+      sessionStorage.removeItem('adminName');
+      window.location.href = 'admin_patron_signin.html';
+    });
+
+    titleInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") runSearch();
+    });
+
+    authorInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") runSearch();
+    });
+
+    renderBooks(sampleBooks);
+  </script>
+</body>
+</html>
