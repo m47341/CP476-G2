@@ -76,7 +76,7 @@
     // ── Auth guard (admin only) ──────────────────────────────
     (function guard() {
       if (sessionStorage.getItem('adminAuth') !== 'true') {
-        window.location.replace('AdminSigninMenu.html');
+        window.location.replace('admin_patron_signin.html');
       }
     })();
 
@@ -104,7 +104,7 @@
     document.getElementById('signOutBtn').addEventListener('click', () => {
       sessionStorage.removeItem('adminAuth');
       sessionStorage.removeItem('adminName');
-      window.location.href = 'AdminSigninMenu.html';
+      window.location.href = 'admin_patron_signin.html';
     });
 
     // ── Form logic ───────────────────────────────────────────
